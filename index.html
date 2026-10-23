@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="解忧慢递邮局 —— 当你在校园里感到疲惫、烦躁或迷茫时，给你一封校园回信">
+  <title>解忧慢递邮局</title>
+  <link rel="stylesheet" href="src/styles/global.css">
+</head>
+<body>
+  <!-- ========== B 模块负责填充页面内容 ========== -->
+  <div id="app">
+    <!-- 【骨架阶段占位】这里暂时只有标题，B 模块会把首页 UI 渲染到这里 -->
+    <header style="padding: 40px 20px; text-align: center;">
+      <h1 style="color: var(--color-primary); font-size: 28px;">✉️ 解忧慢递邮局</h1>
+      <p style="color: var(--color-text-light); margin-top: 8px;">
+        当你在校园里需要一点温暖时，我们会给你一封回信。
+      </p>
+    </header>
+
+    <main style="max-width: 600px; margin: 0 auto; padding: 0 20px;">
+      <div id="mood-list" class="card">
+        <p style="text-align: center; color: var(--color-text-light);">
+          （心情选择区域 —— B 模块填充）
+        </p>
+      </div>
+    </main>
+  </div>
+
+  <!-- 先引入匹配和回信的服务，让页面能调用 -->
+  <script type="module" src="src/pages/home.js"></script>
+</body>
+</html>

@@ -1,0 +1,100 @@
+/* ============================================================
+ * 解忧慢递邮局 —— 全局基础样式（B 模块主要开发内容）
+ *
+ * 【说明】本文件只定义最基础的主题变量和通用样式，
+ *  页面布局和具体组件样式由 B 模块在后续开发中补充。
+ *  颜色风格参考"温暖的邮局信纸"：米白背景 + 暖棕 + 米黄点缀。
+ * ============================================================ */
+
+/* ---------- 主题变量（B 模块可以调整这些变量来改变全站风格） ---------- */
+:root {
+  --color-bg:        #FAF8F2;    /* 页面背景：米白色，像信纸 */
+  --color-card:      #FFFFFF;    /* 卡片背景：纯白 */
+  --color-primary:   #8B5E3C;    /* 主色调：暖棕色，像旧信封 */
+  --color-secondary: #F5E6D3;    /* 辅助色：米黄色 */
+  --color-accent:    #D4A574;    /* 点缀色 */
+  --color-text:      #3A3A3A;    /* 正文颜色：深灰，避免纯黑太刺眼 */
+  --color-text-light:#888888;    /* 次要文字颜色 */
+  --color-border:    #E8E0D5;    /* 边框颜色 */
+
+  --font-main: "Microsoft YaHei", "微软雅黑", -apple-system, BlinkMacSystemFont, sans-serif;
+
+  --radius: 12px;                /* 卡片圆角 */
+  --shadow: 0 2px 8px rgba(139, 94, 60, 0.08);   /* 卡片阴影（暖色柔和阴影） */
+}
+
+/* ---------- 全局重置 ---------- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  font-family: var(--font-main);
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--color-text);
+  background-color: var(--color-bg);
+}
+
+/* ---------- 通用卡片样式 ---------- */
+.card {
+  background: var(--color-card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 24px;
+  margin-bottom: 16px;
+  border: 1px solid var(--color-border);
+}
+
+/* ---------- 通用按钮样式 ---------- */
+.btn {
+  display: inline-block;
+  padding: 10px 24px;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-family: var(--font-main);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-primary {
+  background: var(--color-primary);
+  color: #FFFFFF;
+}
+
+.btn-primary:hover {
+  background: #74482A;   /* 稍深一点的棕色 */
+}
+
+.btn-secondary {
+  background: var(--color-secondary);
+  color: var(--color-primary);
+}
+
+.btn-secondary:hover {
+  background: #EBD7BA;
+}
+
+/* ---------- 回信卡专用样式 ---------- */
+.letter-card {
+  background: linear-gradient(135deg, #FFFBF3 0%, #FDF4E3 100%);
+  border: 1px solid var(--color-accent);
+  border-radius: var(--radius);
+  padding: 32px;
+  box-shadow: var(--shadow);
+  position: relative;
+}
+
+/* ---------- 响应式（手机屏适配，B 模块补充） ---------- */
+@media (max-width: 640px) {
+  body { font-size: 14px; }
+  .card { padding: 16px; }
+  .letter-card { padding: 20px; }
+}
