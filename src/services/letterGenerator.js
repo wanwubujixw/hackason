@@ -6,6 +6,30 @@
  *  B/C/E 模块不要修改这里的函数签名！
  */
 
+// 各心情对应的安慰文案模板（用 {place} 占位，生成时替换为场景名）
+const MOOD_CONTENT = {
+  tired:
+    "今天辛苦了，找个安静的地方歇一歇吧。校园里总有一个角落在等你——不如就去「{place}」坐一会儿，什么都不用做，发呆也好，闭眼也好。你已经撑了很久，剩下的时间，请允许自己慢下来。",
+  irritated:
+    "深呼吸三次，一切都会慢慢好起来的。给自己 5 分钟，只做自己想做的事。让烦心的事先放一放，去「{place}」走一走，让风吹一吹脑袋。情绪不是敌人，它只是提醒你：该松一口气了。",
+  down:
+    "心情不好的时候，风会带走一部分烦恼。找个温暖的角落，让自己静一静，不用急着振作，也不用假装没事。去「{place}」待一会儿吧，低落会过去，而你会比想象中更有力量。",
+  lonely:
+    "一个人也可以很好。去有烟火气的地方走一圈，感受校园的温度。也许是一杯热奶茶，也许是一段琴声，也许只是陌生人的笑声——去「{place}」吧，这些小小的热闹，会慢慢把你围起来。你不是一个人。",
+  confused:
+    "迷茫的时候，先别急着往前走。停下来想一想，也许答案就在下一个转角。去「{place}」坐一会儿，不知道方向也没关系，谁都是一边走一边找路。此刻的困惑，总有一天会变成你脚下的路。",
+  peaceful:
+    "既然心情不错，那就好好享受这份宁静吧。去「{place}」坐一会儿，让这份平静多停留一会儿。好心情值得被认真对待，也值得被好好记住。"
+};
+
+// 温柔结束语池，随机选一句
+const ENDINGS = [
+  "慢慢来，一切都还来得及。💌",
+  "不管怎样，记得照顾好自己。💛",
+  "今天也要对自己温柔一点。🌸",
+  "你值得所有的好。✨"
+];
+
 /**
  * 根据用户选择和匹配到的场景，生成一张完整的校园回信卡内容
  *
@@ -14,40 +38,25 @@
  * @param {Scene}  params.matchedScene   - 匹配到的单个场景（取 matchScenes 返回的第一条即可）
  *
  * @returns {Letter} 回信卡内容对象
- *
- * @typedef {Object} Letter
- * @property {string} content       - 安慰文案正文（100~150 字，温柔自然）
- * @property {string} place         - 推荐地点名称（直接用 matchedScene.name）
- * @property {string} reason        - 选择该地点的原因（直接用 matchedScene.reason）
- * @property {string} smallAction   - 立即可以执行的小行动（直接用 matchedScene.smallAction）
- * @property {string} ending        - 温柔的结束语（一句话）
- *
- * @example
- * const letter = generateLetter({
- *   userSelection: { mood: "tired", availableMinutes: 15, ... },
- *   matchedScene: { name: "图书馆三楼窗边阅读区", ... }
- * });
- * // letter => { content: "......", place: "......", ... }
  */
 function generateLetter({ userSelection, matchedScene }) {
-  // ============================================================
-  // TODO：这里写回信生成逻辑（D 模块完成）
-  //
-  // 简单实现思路（供参考）：
-  // 1. 准备几组不同 mood 对应的安慰文案模板（比如 tired 对应 3 条）
-  // 2. 随机选一条，把 matchedScene.name 填进去
-  // 3. place / reason / smallAction 直接从 matchedScene 取
-  // 4. ending 可以是固定的几句温柔的话，随机选一条
-  // 5. 不要承诺能解决心理疾病，文案要自然不生硬
-  // ============================================================
+  const mood = userSelection && userSelection.mood;
 
-  // 占位：先返回一个固定的结构，让 B 模块能先渲染 UI
+  // 按 mood 选模板；找不到就用 tired 的（保证任何 mood 都有文案）
+  const template = MOOD_CONTENT[mood] || MOOD_CONTENT.tired;
+
+  // 把 {place} 替换成场景名
+  const content = template.replace("{place}", matchedScene.name);
+
+  // 随机挑一句结束语
+  const ending = ENDINGS[Math.floor(Math.random() * ENDINGS.length)];
+
   return {
-    content: "今天辛苦了，找个安静的地方歇一歇吧。校园里总有一个角落在等你。",
+    content,
     place: matchedScene.name,
     reason: matchedScene.reason,
     smallAction: matchedScene.smallAction,
-    ending: "慢慢来，一切都还来得及。💌"
+    ending
   };
 }
 
