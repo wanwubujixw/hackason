@@ -39,6 +39,8 @@ export function addFavorite(item) {
     list.unshift({
       sceneId: sceneId,
       letterContent: (item && item.letterContent) || "",
+      place: (item && item.place) || "",
+      mood: (item && item.mood) || "",
       savedAt: new Date().toISOString()
     });
     localStorage.setItem(FAVORITES_KEY, JSON.stringify(list));

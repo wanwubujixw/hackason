@@ -93,9 +93,9 @@ function matchScenes(userSelection) {
 }
 
 // 兜底场景 ID：挑两个最通用、最不容易踩雷的地点
-// - scene-013 南湖前面的空地：户外自然，散步/发呆/吹风都行，任何心情都不违和
+// - scene-012 南湖前面的空地：户外自然，散步/发呆/吹风都行，任何心情都不违和
 // - scene-002 文学院：室内安静，累了/低落时坐着就好，可以独处
-const FALLBACK_SCENE_IDS = ["scene-013", "scene-002"];
+const FALLBACK_SCENE_IDS = ["scene-012", "scene-002"];
 
 /**
  * 获取默认兜底场景（当 matchScenes 返回空数组时使用）
@@ -110,3 +110,5 @@ function getFallbackScenes() {
   // 万一以后数据被改、这两个 ID 找不到了，退回前两条，保证永远有兜底
   return ordered.length > 0 ? ordered : SCENES.slice(0, 2);
 }
+
+export { matchScenes, getFallbackScenes };
