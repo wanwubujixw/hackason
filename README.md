@@ -7,10 +7,13 @@
 🔗 **在线体验**：https://wanwubujixw.github.io/hackason/
 🔍 **storage 自动化测试页**：https://wanwubujixw.github.io/hackason/tests/storage-test.html
 
+> **最快体验（30 秒）**：打开在线地址 → 点「疲惫 😴」→ 选「15 分钟」→ 勾「安静」→ 选「希望独处」→ 点「生成我的回信」，即可看到推荐地点与回信卡。
+
 ---
 
 ## 目录
 
+- [项目简介](#一项目简介)
 - [项目特色与创新点](#二项目特色与创新点)
 - [功能列表](#三功能列表)
 - [技术栈](#四项目技术栈)
@@ -62,7 +65,7 @@
 
 ## 三、功能列表
 
-### ✅ 已实现（MVP 已整合，2026-10-24）
+### ✅ 已实现（MVP 已整合，2026-10-25 更新场景数据）
 - [x] 项目目录结构与基础配置
 - [x] 模块接口规范与文档
 - [x] 心情选项数据（6 种心情）
@@ -177,15 +180,16 @@ git --version
 ### 步骤 2：安装 VS Code（推荐）
 去 https://code.visualstudio.com/ 下载安装。安装时勾选"Add to PATH"选项。
 
-### 步骤 3：克隆仓库
-打开 PowerShell，运行：
+### 步骤 3：获取代码
+仓库是公开的，克隆不需要任何权限。打开 PowerShell，运行：
 ```powershell
-# 把 URL 换成你在 GitHub 上创建的仓库地址（A 负责人提供）
-git clone https://github.com/你的GitHub用户名/hackason.git
+git clone https://github.com/wanwubujixw/hackason.git
 
 # 进入项目目录
 cd hackason
 ```
+
+如果不想装 Git，也可以在 GitHub 仓库页面点 **Code → Download ZIP**，解压后进入 `hackason` 目录。
 
 ### 步骤 4：启动项目
 **不需要 npm install、不需要 npm run dev**。直接：
@@ -195,6 +199,8 @@ cd hackason
 脚本会用 Windows 自带的 PowerShell 启动本地静态服务器（默认 8000 端口，被占用时自动顺延到 8010），并自动打开浏览器。看到"✉️ 解忧慢递邮局"首页即启动成功。
 
 > 为什么不能直接双击 `index.html`：项目使用浏览器原生 ES Modules，`file://` 协议下会被浏览器拦截，页面会空白。
+
+**macOS / Linux 用户**：在项目根目录执行 `python3 -m http.server 8000`，然后浏览器访问 http://localhost:8000/ 即可（不需要安装任何依赖）。
 
 或者用 VS Code：
 1. 打开 VS Code
@@ -210,9 +216,9 @@ cd hackason
 
 | 错误 | 原因 | 解决 |
 |---|---|---|
-| 页面打开后控制台报 CORS 错误 | 直接用 file:// 协议打开时，ES 模块可能被浏览器拦截 | 用 VS Code Live Server 或 Python `python -m http.server` 启本地服务器 |
-| 克隆时提示 Permission denied | 没加为仓库 Collaborator | 让 A 负责人在 GitHub 仓库 Settings → Collaborators 里加上你的 GitHub 账号 |
-| Git push 被拒绝 | 你在推 main 分支 | 切回自己的分支再推：`git checkout feat/home-ui` |
+| 页面打开后控制台报 CORS 错误 | 直接用 file:// 协议打开时，ES 模块可能被浏览器拦截 | 用 VS Code Live Server、`启动本地预览.bat` 或 `python -m http.server` 启本地服务器 |
+| 双击 `启动本地预览.bat` 没反应 | PowerShell 执行策略或端口被占用 | 右键「以管理员身份运行」，或改用 `python -m http.server 8000` |
+| `git push` 被拒绝 | 没有仓库写权限，或直接推送受保护的 `main` | 用自己的分支修改后发起 Pull Request；只在有权限时推送 |
 
 ---
 
@@ -220,7 +226,7 @@ cd hackason
 
 > 以下为 2026-10-25 场景数据调整后在 15 条真实场景数据上重新核对的结果。场景数据再调整后，推荐结果可能变化。
 
-### 示例：疲惫，有 15 分钟，想安静独处
+### 示例 1：疲惫，有 15 分钟，想安静独处
 
 **用户输入**：
 - 心情：疲惫 😴
@@ -256,6 +262,36 @@ cd hackason
 - 反馈写入 `jyo_feedbacks`（good / bad），提交后按钮置灰不可重复提交
 
 **无匹配时**：`matchScenes` 返回空数组会启用兜底场景 `scene-012`（南湖前面的空地）与 `scene-002`（文学院），并显示"没有找到完全合适的地点"提示。
+
+### 示例 2：低落，有 15 分钟，想待在自然里
+
+**用户输入**：
+- 心情：低落 💧
+- 可用时长：15 分钟
+- 场景偏好：自然
+- 社交舒适度：希望独处
+
+**打分过程**（同一套规则）：
+- 南湖前面的空地：心情 +3、时长 +2、独处 +2、自然 +1 = **8**
+- 外国语学院门口的林荫空地：心情 +3、时长 +2、独处 +2、自然 +1 = **8**
+- 文学院：心情 +3、时长 +2、独处 +2、类型不是自然场景 = **7**
+
+**实际推荐结果**：
+1. 自然 · 南湖前面的空地（scene-012）
+2. 自然 · 外国语学院门口的林荫空地（scene-015）
+3. 生活 · 文学院（scene-002）
+
+**回信卡（选择第二个场景）**：
+```
+💌 心情不好的时候，风会带走一部分烦恼。找个温暖的角落，让自己静一静，不用急着振作，也不用假装没事。去「外国语学院门口的林荫空地」待一会儿吧，低落会过去，而你会比想象中更有力量。
+
+📍 推荐地点：外国语学院门口的林荫空地
+📝 选择原因：情绪低落、心里堵得慌的时候，来这片偏僻安静的林荫空地走一走。没人经过，不用忍着，想哭想骂都可以，发泄完会轻松一点。
+👉 小行动：沿着林荫道走到最里面，找个没人的角落坐十分钟。
+💛 慢慢来，一切都还来得及。💌（结束语从 4 句中随机选一句）
+```
+
+> 两个示例说明：推荐结果不是写死的，而是由「心情 / 时长 / 社交 / 偏好」四项打分实时计算；同样的"疲惫"，换成 5 分钟或换一种社交偏好，前三名就会变化。
 
 ---
 
@@ -323,7 +359,7 @@ cd hackason
 
 | 编号 | 角色 | 负责人 | 主要文件 |
 |---|---|---|---|
-| A | 项目负责人 + Git 整合 | **你（用户）** | README、docs/*、Git 管理 |
+| A | 项目负责人 + Git 整合 | 项目负责人 A | README、docs/*、Git 管理 |
 | B | 首页 + UI 设计 | 队友 B | index.html、src/pages/*、src/styles/global.css |
 | C | 校园场景数据 | 队友 C | src/data/scenes.js、src/data/moods.js |
 | D | 匹配规则 + 回信模板 | 队友 D | src/services/matcher.js、src/services/letterGenerator.js |
@@ -431,9 +467,9 @@ git log --since="2026-10-23 00:00:00" --until="2026-10-25 20:00:00" --all --date
 简单来说：任何人可以自由使用、修改、分发本项目代码，商用也没问题，但必须保留版权声明和许可证。
 
 ### 联系方式
-> （暂时没有。后续可以加上团队 GitHub 主页或邮箱。）
->
-> 项目地址：[https://github.com/你的GitHub用户名/hackason](https://github.com/你的GitHub用户名/hackason)
+- 项目地址：https://github.com/wanwubujixw/hackason
+- 在线体验：https://wanwubujixw.github.io/hackason/
+- 问题反馈：欢迎在仓库的 Issues 中留言
 
 ---
 
