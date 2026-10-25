@@ -115,8 +115,34 @@ const SCENES = [
     imagePath: "",
     dataSource: "已核实"
   },
-  // scene-006（原沁园春食堂）、scene-007（原桂香园食堂）已移除，
-  // 编号保留不复用，避免与浏览器里已有的历史收藏记录冲突。
+  {
+    id: "scene-006",
+    name: "沁园春食堂",
+    type: "食堂",
+    description:
+      "沁园春是校园里人比较少的食堂，一楼尤其安静、人少不吵，饭点也不用排长队。可以端着餐盘挑个喜欢的位置，一个人慢慢吃，不用赶也不用拼桌。",
+    reason: "低落或孤单的时候，人少的地方没有压力。一个人安静地吃一顿热饭，胃暖了心也会跟着稳下来。",
+    tags: ["lonely", "down"],
+    timeRange: [5, 15],
+    socialTags: ["alone"],
+    smallAction: "在一楼挑个靠边的位子，慢慢吃完一整顿饭。",
+    imagePath: "",
+    dataSource: "已核实"
+  },
+  {
+    id: "scene-007",
+    name: "桂香园食堂",
+    type: "食堂",
+    description:
+      "桂香园是桂子山上最有烟火气的食堂之一，蓝白色系的装修很漂亮，门口还有一个小花圃。一楼是自助小碗菜区，饭点排队的队伍能拐个弯，热汤和面食一直供应到晚上。",
+    reason: "累了一天别糊弄饭。来桂香园吃一顿热乎的，胃暖了，人就缓过来了。",
+    tags: ["tired"],
+    timeRange: [5, 15],
+    socialTags: ["small", "crowded"],
+    smallAction: "去一楼自助小碗菜区，拿一个自己没吃过的菜。",
+    imagePath: "",
+    dataSource: "已核实"
+  },
   {
     id: "scene-008",
     name: "南湖综合楼水吧",
