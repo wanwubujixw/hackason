@@ -7,6 +7,23 @@
 
 ---
 
+## [0.2.1] - 2026-10-25
+
+### 新增
+- storage 模块自动化回归测试页 `tests/storage-test.html`，直接 `import` 真实模块，覆盖 10 项用例
+- GitHub Pages 在线部署（`.nojekyll`），线上地址 https://wanwubujixw.github.io/hackason/
+- README 增加在线体验入口、自动化测试页入口与代上传说明
+
+### 修复
+- `docs/DEMO_SCRIPT.md` 按真实界面与数据重写：删除「双击 index.html」「图书馆三楼窗边」等与实现不符的表述
+- `CONTRIBUTING.md` 合并前检查项改为双击「启动本地预览.bat」，避免 `file://` 白屏误判
+- `docs/TESTING.md` 补充 375×812 宽度渲染验证结果
+
+### 变更
+- 开发期功能分支（`feat/campus-data`、`feat/integrate-ui`、`feat/favorites-feedback`、`chore/pages-deploy`、`chore/storage-test-page`）合并后清理，远端仅保留 `main`
+
+---
+
 ## [0.2.0] - 2026-10-24
 
 ### 新增

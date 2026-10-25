@@ -4,6 +4,9 @@
 > 花一分钟选一下当下的心情，我们会给你一封专属的**校园回信卡**，
 > 并推荐一个适合此刻的校园地点。
 
+🔗 **在线体验**：https://wanwubujixw.github.io/hackason/
+🔍 **storage 自动化测试页**：https://wanwubujixw.github.io/hackason/tests/storage-test.html
+
 ---
 
 ## 目录
@@ -70,11 +73,13 @@
 - [x] 完整界面（首页 → 偏好 → 推荐 → 回信卡 → 收藏，邮局主题样式）
 - [x] 手机响应式样式（640px 断点）
 - [x] 零依赖本地预览服务器（`serve.ps1` / `启动本地预览.bat`）
+- [x] GitHub Pages 在线部署（[线上地址](https://wanwubujixw.github.io/hackason/)）
+- [x] storage 模块自动化回归测试页（`tests/storage-test.html`，10 项用例）
 - [x] 全体协作文档（架构、分工、Git 流程、测试、演示脚本）
 
 ### 🚫 暂不实现（留到以后）
 - [ ] 用户注册 / 登录 / 账号系统
-- [ ] 服务器部署和在线访问
+- [ ] 服务器端接口与数据持久化
 - [ ] 大语言模型 API 调用
 - [ ] 地理定位 API
 - [ ] 移动端 App / 微信小程序
@@ -289,6 +294,7 @@ cd hackason
 ## 十、测试与验证
 
 > 详细测试记录见 [docs/TESTING.md](./docs/TESTING.md)，由 E 模块填写。
+> 自动化回归测试页（可直接用线上地址）：[tests/storage-test.html](https://wanwubujixw.github.io/hackason/tests/storage-test.html) —— 10 项用例，2026-10-25 实测 10/10 通过。
 
 ### 测试环境
 - 浏览器：Chrome / Edge 最新版
@@ -305,7 +311,7 @@ cd hackason
 | 5 | 无匹配时展示兜底场景 | ⚠️ 正常流程未触发（12 条数据覆盖全部心情），兜底代码保留 |
 | 6 | 收藏 / 取消收藏正常 | ✅ 通过 |
 | 7 | 反馈提交正常 | ✅ 通过 |
-| 8 | 手机屏（375px）适配 | ⚠️ 仅确认 640px 响应式样式，未在真机实测 |
+| 8 | 手机屏（375px）适配 | ⚠️ 375×812 宽度渲染无溢出、按钮完整；未做真机触控 |
 
 ### 已知问题
 - 场景图片暂缺（`imagePath` 均为空），界面以文字为主
@@ -323,6 +329,8 @@ cd hackason
 | D | 匹配规则 + 回信模板 | 队友 D | src/services/matcher.js、src/services/letterGenerator.js |
 | E | 收藏 / 反馈 + 测试 | 队友 E | src/utils/storage.js、docs/TESTING.md、docs/DEMO_SCRIPT.md |
 
+> **代上传说明**：E 同学未注册 GitHub 账号，`src/utils/storage.js` 与 `tests/storage-test.html` 以其署名 `momengxin` 提交，由 A 代为上传，提交信息中均已注明「代上传」；其余成员的提交均由其本人账号完成。B、C、D、E 的代码均通过各自功能分支合入 `main`。
+
 > **详细分工说明**（精确到文件路径、第一天做什么、交付标准）见 [docs/TEAM_DIVISION.md](./docs/TEAM_DIVISION.md)。
 
 ---
@@ -332,11 +340,14 @@ cd hackason
 本项目通过 GitHub 进行版本管理。完整 Git 协作教程见 [docs/GIT_WORKFLOW.md](./docs/GIT_WORKFLOW.md)。
 
 ### 分支结构
-- `main`：主分支，A（项目负责人）维护，所有人的代码最终合并到这里
-- `feat/home-ui`：B（首页 UI）的开发分支
-- `feat/campus-data`：C（校园场景数据）的开发分支
-- `feat/matcher-letter`：D（匹配 + 回信）的开发分支
-- `feat/favorites-feedback`：E（收藏 / 反馈 / 测试）的开发分支
+- `main`：主分支，A（项目负责人）维护，所有人的代码最终合并到这里；当前远端仅保留 `main`
+- 开发期按模块使用功能分支并全部合并：
+  - `feat/campus-data`：C（校园场景数据）
+  - `feat/integrate-ui`：B（首页 UI）
+  - `feat/favorites-feedback`：E（收藏 / 反馈 / 测试）
+  - `chore/pages-deploy`：GitHub Pages 部署
+  - `chore/storage-test-page`：storage 自动化测试页与文档修正
+- 上述分支合并后已删除，GitHub 上的 Pull Request 记录仍然保留
 
 ### 查看提交记录
 ```bash
@@ -387,7 +398,7 @@ git log --since="2026-10-23 00:00:00" --until="2026-10-25 20:00:00" --all --date
 ### 当前已知限制（诚实告知）
 1. **场景数据**：当前 src/data/scenes.js 共 12 条华中师范大学真实地点，`dataSource` 均标注为"已核实"；但暂未配图（`imagePath` 为空），界面以文字为主。
 2. **回信文案**：使用 6 套心情模板 + 4 句随机结束语，未接入大模型；同一心情多次生成正文相同，只有结束语会变化。
-3. **界面功能**：完整流程已可运行；手机端仅实现了 640px 的 CSS 响应式断点，未在真机/DevTools 逐项验证；桌面端依赖手动回归。
+3. **界面功能**：完整流程已可运行；手机端已实现 640px CSS 响应式断点，并在 375×812 宽度下验证无横向溢出，但未做真机触控逐项验证；桌面端依赖手动回归。
 4. **数据持久化**：收藏和反馈用浏览器 localStorage，**清除浏览器数据或换电脑就会丢失**。不跨设备同步，不上传到任何服务器。
 5. **没有错误上报**：如果用户遇到 bug，没有自动错误上报机制，靠手动反馈。
 
@@ -399,7 +410,7 @@ git log --since="2026-10-23 00:00:00" --until="2026-10-25 20:00:00" --all --date
 - [ ] 评论 / 点赞功能（如果有后端的话）
 - [ ] 校园地图可视化（集成地图 API 展示场景位置）
 - [ ] 微信小程序版本
-- [ ] 服务器部署 + 账号系统
+- [ ] 账号系统 + 服务端数据同步（当前为纯静态部署，无后端）
 
 ---
 
