@@ -115,34 +115,8 @@ const SCENES = [
     imagePath: "",
     dataSource: "已核实"
   },
-  {
-    id: "scene-006",
-    name: "沁园春食堂",
-    type: "食堂",
-    description:
-      "沁园春是校园里人比较少的食堂，一楼尤其安静、人少不吵，饭点也不用排长队。可以端着餐盘挑个喜欢的位置，一个人慢慢吃，不用赶也不用拼桌。",
-    reason: "低落或孤单的时候，人少的地方没有压力。一个人安静地吃一顿热饭，胃暖了心也会跟着稳下来。",
-    tags: ["lonely", "down"],
-    timeRange: [5, 15],
-    socialTags: ["alone"],
-    smallAction: "在一楼挑个靠边的位子，慢慢吃完一整顿饭。",
-    imagePath: "",
-    dataSource: "已核实"
-  },
-  {
-    id: "scene-007",
-    name: "桂香园食堂",
-    type: "食堂",
-    description:
-      "桂香园是桂子山上最有烟火气的食堂之一，蓝白色系的装修很漂亮，门口还有一个小花圃。一楼是自助小碗菜区，饭点排队的队伍能拐个弯，热汤和面食一直供应到晚上。",
-    reason: "累了一天别糊弄饭。来桂香园吃一顿热乎的，胃暖了，人就缓过来了。",
-    tags: ["tired"],
-    timeRange: [5, 15],
-    socialTags: ["small", "crowded"],
-    smallAction: "去一楼自助小碗菜区，拿一个自己没吃过的菜。",
-    imagePath: "",
-    dataSource: "已核实"
-  },
+  // scene-006（原沁园春食堂）、scene-007（原桂香园食堂）已移除，
+  // 编号保留不复用，避免与浏览器里已有的历史收藏记录冲突。
   {
     id: "scene-008",
     name: "南湖综合楼水吧",
@@ -210,6 +184,48 @@ const SCENES = [
     timeRange: [15, 30],
     socialTags: ["alone", "small"],
     smallAction: "坐进藤椅里，抬头数一数能看见几种绿。",
+    imagePath: "",
+    dataSource: "已核实"
+  },
+  {
+    id: "scene-013",
+    name: "梅园",
+    type: "自然",
+    description:
+      "梅园的树长得密，石凳散在树荫下，平时人不多。冬天梅花开的时候整片园子都是香的，其他季节也安静，很适合拿本书坐下来慢慢看。",
+    reason: "想背书或者一个人歇一会儿的时候，来梅园找张树荫下的石凳坐下。翻几页书、发会儿呆，不用应付任何人，时间会过得慢下来。",
+    tags: ["tired", "peaceful"],
+    timeRange: [15, 30],
+    socialTags: ["alone"],
+    smallAction: "找一张树荫下的石凳，把今天要背的内容读出声来。",
+    imagePath: "",
+    dataSource: "已核实"
+  },
+  {
+    id: "scene-014",
+    name: "博雅广场",
+    type: "广场",
+    description:
+      "博雅广场采光很好，白天阳光铺满整片草地，广场边的台阶和草坪都能随便坐。天气好的时候，常有同学在草地上聊天、看书、晒太阳，气氛松弛。",
+    reason: "累了就来草地上躺着晒晒太阳；心里闷得慌，就约上朋友在草地上聊聊天。光晒在身上，话有人接，情绪会慢慢被烘暖。",
+    tags: ["tired", "lonely"],
+    timeRange: [15, 30],
+    socialTags: ["alone", "small"],
+    smallAction: "挑一块有阳光的草地坐下，晒十分钟太阳。",
+    imagePath: "",
+    dataSource: "已核实"
+  },
+  {
+    id: "scene-015",
+    name: "外国语学院门口的林荫空地",
+    type: "自然",
+    description:
+      "外国语学院门口有一片比较偏的林荫空地，树密、人少，平时很安静。往里走几步几乎听不到主路上的声音，是一个可以自己待着、不被注意的角落。",
+    reason: "情绪低落、心里堵得慌的时候，来这片偏僻安静的林荫空地走一走。没人经过，不用忍着，想哭想骂都可以，发泄完会轻松一点。",
+    tags: ["down"],
+    timeRange: [15, 30],
+    socialTags: ["alone"],
+    smallAction: "沿着林荫道走到最里面，找个没人的角落坐十分钟。",
     imagePath: "",
     dataSource: "已核实"
   }
