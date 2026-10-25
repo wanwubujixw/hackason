@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>解忧慢递邮局｜storage 自动化回归测试</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f6f4ef;
+      --card: #ffffff;
+      --text: #2f2a25;
+      --muted: #7a726a;
+      --line: #e6e0d6;
+      --ok: #1f7a4d;
+      --fail: #b3261e;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 24px 16px 48px;
+      background: var(--bg);
+      color: var(--text);
+      font-family: "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
+      line-height: 1.6;
+    }
+    .wrap { max-width: 760px; margin: 0 auto; }
+    h1 { font-size: 20px; margin: 0 0 8px; }
+    p.desc { color: var(--muted); font-size: 14px; margin: 0 0 16px; }
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+    .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; }
+    button {
+      font: inherit;
+      font-size: 14px;
+      padding: 9px 16px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--text);
+      cursor: pointer;
+    }
+    button.primary { background: #2f2a25; border-color: #2f2a25; color: #fff; }
+    button:hover { opacity: .88; }
+    #log {
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 13px;
+      white-space: pre-wrap;
+      word-break: break-word;
+      min-height: 40px;
+      margin: 0;
+    }
+    .pass { color: var(--ok); }
+    .fail { color: var(--fail); }
+    .info { color: var(--muted); }
+    .summary { font-weight: 700; }
+    code { background: #f2eee7; padding: 1px 5px; border-radius: 4px; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>解忧慢递邮局｜storage 自动化回归测试</h1>
+    <p class="desc">
+      本页不内联实现代码，直接 <code>import</code> 主线的
+      <code>src/utils/storage.js</code>，测试的就是线上实际运行的收藏与反馈逻辑。
+    </p>
+    <p class="desc">
+      需通过 HTTP 访问（本项目使用原生 ES Modules，<code>file://</code> 会被浏览器拦截）：
+      在项目根目录运行 <code>python -m http.server 8123</code>，再打开
+      <code>http://localhost:8123/tests/storage-test.html</code>。
+    </p>
+
+    <div class="actions">
+      <button type="button" id="btn-run" class="primary">✅ 一键执行全部自动化测试</button>
+      <button type="button" id="btn-clear">🗑️ 清空 localStorage 测试数据</button>
+    </div>
+
+    <div class="panel">
+      <pre id="log"></pre>
+    </div>
+  </div>
+
+  <script type="module">
+    import * as storage from '../src/utils/storage.js';
+
+    const FAVORITES_KEY = 'jyo_favorites';
+    const FEEDBACK_KEY = 'jyo_feedbacks';
+
+    const logEl = document.getElementById('log');
+
+    function log(text, kind) {
+      const line = document.createElement('div');
+      if (kind) line.className = kind;
+      line.textContent = text;
+      logEl.appendChild(line);
+    }
+
+    function assert(cond, message) {
+      if (!cond) throw new Error(message);
+    }
+
+    const tests = [
+      {
+        name: '初始状态读取收藏为空数组',
+        run() {
+          storage.clearAll();
+          const list = storage.getFavorites();
+          assert(Array.isArray(list), 'getFavorites 应返回数组，实际：' + Object.prototype.toString.call(list));
+          assert(list.length === 0, '清空后收藏应为空，实际长度：' + list.length);
+        }
+      },
+      {
+        name: 'addFavorite 完整写入一条收藏',
+        run() {
+          storage.clearAll();
+          const ok = storage.addFavorite({
+            sceneId: 'scene-001',
+            letterContent: '测试回信正文',
+            place: '测试地点',
+            mood: '疲惫'
+          });
+          assert(ok === true, 'addFavorite 应返回 true');
+
+          const list = storage.getFavorites();
+          assert(list.length === 1, '收藏长度应为 1，实际：' + list.length);
+          const item = list[0];
+          assert(item.sceneId === 'scene-001', 'sceneId 不匹配：' + item.sceneId);
+          assert(item.letterContent === '测试回信正文', 'letterContent 未保存');
+          assert(item.place === '测试地点', 'place 未保存');
+          assert(item.mood === '疲惫', 'mood 未保存');
+          assert(typeof item.savedAt === 'string' && item.savedAt.length > 0, 'savedAt 未写入');
+        }
+      },
+      {
+        name: '重复收藏同一场景自动去重',
+        run() {
+          const ok = storage.addFavorite({ sceneId: 'scene-001', letterContent: '第二次' });
+          assert(ok === true, '重复收藏应返回 true（视为已收藏成功）');
+          const list = storage.getFavorites();
+          assert(list.length === 1, '重复收藏后长度仍应为 1，实际：' + list.length);
+        }
+      },
+      {
+        name: 'addFavorite 缺少 sceneId 返回 false',
+        run() {
+          const before = storage.getFavorites().length;
+          const ok = storage.addFavorite({ letterContent: '没有 sceneId' });
+          assert(ok === false, '缺少 sceneId 应返回 false');
+          assert(storage.getFavorites().length === before, '非法调用不应改变收藏列表');
+        }
+      },
+      {
+        name: 'isFavorite 判断逻辑正确',
+        run() {
+          assert(storage.isFavorite('scene-001') === true, '已收藏的 scene-001 应返回 true');
+          assert(storage.isFavorite('scene-999') === false, '未收藏的 scene-999 应返回 false');
+          assert(storage.isFavorite('') === false, '空 sceneId 应返回 false');
+        }
+      },
+      {
+        name: 'removeFavorite 删除收藏',
+        run() {
+          const ok = storage.removeFavorite('scene-001');
+          assert(ok === true, 'removeFavorite 应返回 true');
+          assert(storage.getFavorites().length === 0, '删除后收藏应为空');
+          assert(storage.isFavorite('scene-001') === false, '删除后 isFavorite 应为 false');
+          assert(storage.removeFavorite('') === false, '空 sceneId 应返回 false');
+        }
+      },
+      {
+        name: 'submitFeedback 写入 good / bad 两类反馈',
+        run() {
+          storage.clearAll();
+          assert(storage.submitFeedback('scene-001', 'good') === true, 'good 反馈应返回 true');
+          assert(storage.submitFeedback('scene-002', 'bad') === true, 'bad 反馈应返回 true');
+
+          const raw = localStorage.getItem(FEEDBACK_KEY);
+          assert(raw !== null, '反馈 key ' + FEEDBACK_KEY + ' 未写入');
+          const list = JSON.parse(raw);
+          assert(Array.isArray(list) && list.length === 2, '反馈应有 2 条，实际：' + list.length);
+          assert(list[0].sceneId === 'scene-001' && list[0].feedback === 'good', '第 1 条反馈字段不正确');
+          assert(list[1].sceneId === 'scene-002' && list[1].feedback === 'bad', '第 2 条反馈字段不正确');
+          assert(typeof list[0].submittedAt === 'string', 'submittedAt 未写入');
+        }
+      },
+      {
+        name: 'submitFeedback 非法参数返回 false',
+        run() {
+          const before = JSON.parse(localStorage.getItem(FEEDBACK_KEY)).length;
+          assert(storage.submitFeedback('', 'good') === false, '空 sceneId 应返回 false');
+          assert(storage.submitFeedback('scene-001', 'meh') === false, '非法 feedback 应返回 false');
+          const after = JSON.parse(localStorage.getItem(FEEDBACK_KEY)).length;
+          assert(before === after, '非法调用不应写入反馈');
+        }
+      },
+      {
+        name: '脏数据容错：非数组 JSON 时返回空数组',
+        run() {
+          localStorage.setItem(FAVORITES_KEY, '{"not":"an array"}');
+          const list = storage.getFavorites();
+          assert(Array.isArray(list) && list.length === 0, '非法 JSON 结构应回退为空数组');
+          assert(!storage.isFavorite('scene-001'), '脏数据下 isFavorite 应为 false');
+
+          localStorage.setItem(FAVORITES_KEY, 'not-json-at-all');
+          const list2 = storage.getFavorites();
+          assert(Array.isArray(list2) && list2.length === 0, '非法 JSON 文本应回退为空数组');
+        }
+      },
+      {
+        name: 'clearAll 清空收藏与反馈',
+        run() {
+          storage.addFavorite({ sceneId: 'scene-003' });
+          storage.submitFeedback('scene-003', 'good');
+          storage.clearAll();
+          assert(localStorage.getItem(FAVORITES_KEY) === null, FAVORITES_KEY + ' 未被清除');
+          assert(localStorage.getItem(FEEDBACK_KEY) === null, FEEDBACK_KEY + ' 未被清除');
+          assert(storage.getFavorites().length === 0, '清空后收藏应为空');
+        }
+      }
+    ];
+
+    function runAll() {
+      logEl.innerHTML = '';
+      log('===== storage 自动化测试开始（测试对象：src/utils/storage.js）=====', 'info');
+      log('浏览器：' + navigator.userAgent, 'info');
+
+      let pass = 0;
+      let fail = 0;
+
+      tests.forEach((test, index) => {
+        const no = index + 1;
+        try {
+          test.run();
+          pass++;
+          log('✅ 第 ' + no + ' 项通过：' + test.name, 'pass');
+        } catch (err) {
+          fail++;
+          log('❌ 第 ' + no + ' 项失败：' + test.name, 'fail');
+          log('   原因：' + (err && err.message ? err.message : String(err)), 'fail');
+        }
+      });
+
+      log('', null);
+      log('===== 测试汇总：✅ 通过 ' + pass + ' 项，❌ 失败 ' + fail + ' 项 =====', 'summary');
+      if (fail === 0) {
+        log('🎉 全部用例通过，storage 模块行为与预期一致。', 'pass');
+      } else {
+        log('⚠️ 存在失败用例，请核对 src/utils/storage.js 的实现。', 'fail');
+      }
+    }
+
+    document.getElementById('btn-run').addEventListener('click', runAll);
+
+    document.getElementById('btn-clear').addEventListener('click', () => {
+      storage.clearAll();
+      logEl.innerHTML = '';
+      log('✅ 已清空 localStorage 测试数据（' + FAVORITES_KEY + ' / ' + FEEDBACK_KEY + '）', 'info');
+    });
+  </script>
+</body>
+</html>

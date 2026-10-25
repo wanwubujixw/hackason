@@ -57,3 +57,13 @@
 - **不会上传到任何服务器，不会被他人访问**
 
 （README 里会复制这段给用户看）
+
+---
+
+## 五、storage 自动化回归测试页
+
+- 测试页：`tests/storage-test.html`
+- 说明：页面直接 `import` 主线的 `src/utils/storage.js`，不内联副本实现，测试的就是线上实际运行的代码（由 E 分享的单文件自测页改造而来）
+- 运行方式：项目根目录启动本地服务器（如 `python -m http.server 8123`），访问 `http://localhost:8123/tests/storage-test.html`；GitHub Pages 部署地址后加 `/tests/storage-test.html` 同样可直接运行
+- 覆盖用例（10 项）：初始读取、完整写入收藏、重复收藏去重、缺少 sceneId 容错、isFavorite 判断、删除收藏、good/bad 反馈写入、非法反馈参数、脏数据容错、clearAll 清空
+- 最近实测（2026-10-25，Chrome）：✅ 10 项通过，0 项失败
