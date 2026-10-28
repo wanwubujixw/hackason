@@ -23,3 +23,4 @@ node_modules/
 # ========== 个人隐私（重要！） ==========
 # 不要把任何包含个人身份信息的文件提交到仓库
 # 如果有 .env 或私钥文件，确保在这里列出
+/miniprogram/project.private.config.json

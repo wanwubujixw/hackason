@@ -1,0 +1,16 @@
+{
+  "pages": [
+    "pages/index/index"
+  ],
+  "window": {
+    "navigationBarTitleText": "解忧慢递邮局",
+    "navigationBarBackgroundColor": "#FAF8F2",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#FAF8F2",
+    "backgroundTextStyle": "dark"
+  },
+  "style": "v2",
+  "componentFramework": "glass-easel",
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents"
+}

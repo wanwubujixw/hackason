@@ -1,0 +1,167 @@
+/* 全局基础样式，迁移自 hackason/src/styles/global.css，尺寸由 px 换算为 rpx */
+page {
+  min-height: 100%;
+  background-color: #FAF8F2;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-size: 30rpx;
+  line-height: 1.6;
+  color: #3A3A3A;
+}
+
+.page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+/* ---------- 页头 / 主体 ---------- */
+.site-header {
+  padding: 64rpx 40rpx 32rpx;
+  text-align: center;
+}
+
+.site-title {
+  display: block;
+  font-size: 52rpx;
+  font-weight: 700;
+  letter-spacing: 2rpx;
+  color: #8B5E3C;
+}
+
+.site-subtitle {
+  display: block;
+  margin-top: 16rpx;
+  font-size: 28rpx;
+  color: #888888;
+}
+
+.site-main {
+  flex: 1;
+  padding: 0 32rpx 64rpx;
+  box-sizing: border-box;
+}
+
+/* ---------- 通用卡片 ---------- */
+.card {
+  padding: 48rpx;
+  margin-bottom: 32rpx;
+  background: #FFFFFF;
+  border: 2rpx solid #E8E0D5;
+  border-radius: 24rpx;
+  box-shadow: 0 4rpx 16rpx rgba(139, 94, 60, 0.08);
+  box-sizing: border-box;
+}
+
+/* ---------- 文案层级 ---------- */
+.step-label {
+  display: block;
+  margin-bottom: 8rpx;
+  font-size: 26rpx;
+  letter-spacing: 2rpx;
+  color: #D4A574;
+}
+
+.section-title {
+  display: block;
+  margin-bottom: 12rpx;
+  font-size: 36rpx;
+  font-weight: 600;
+  color: #8B5E3C;
+}
+
+.section-desc {
+  display: block;
+  margin-bottom: 32rpx;
+  font-size: 28rpx;
+  color: #888888;
+}
+
+/* ---------- 按钮（重置小程序 button 默认样式） ---------- */
+.btn {
+  width: 100%;
+  margin: 0;
+  padding: 22rpx 48rpx;
+  border: none;
+  border-radius: 16rpx;
+  font-size: 30rpx;
+  line-height: 1.5;
+  box-sizing: border-box;
+}
+
+.btn::after {
+  border: none;
+}
+
+.btn-primary {
+  background: #8B5E3C;
+  color: #FFFFFF;
+}
+
+.btn-secondary {
+  background: #F5E6D3;
+  color: #8B5E3C;
+}
+
+/* 点击态 */
+.btn-hover {
+  opacity: 0.85;
+}
+
+/* 页头里的轻量按钮（我的收藏） */
+.btn-ghost {
+  display: inline-block;
+  margin-top: 24rpx;
+  padding: 10rpx 36rpx;
+  border: 2rpx solid #E8E0D5;
+  border-radius: 999rpx;
+  font-size: 26rpx;
+  color: #8B5E3C;
+}
+
+.btn-ghost-hover {
+  background: #F5E6D3;
+}
+
+.actions {
+  margin-top: 8rpx;
+}
+
+.actions .btn {
+  margin-top: 20rpx;
+}
+
+/* ---------- 选项 chip ---------- */
+.chip-row {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.chip {
+  margin: 0 16rpx 16rpx 0;
+  padding: 18rpx 36rpx;
+  border: 2rpx solid #E8E0D5;
+  border-radius: 999rpx;
+  background: #FAF8F2;
+  font-size: 28rpx;
+  color: #3A3A3A;
+}
+
+.chip.is-selected {
+  background: #8B5E3C;
+  border-color: #8B5E3C;
+  color: #FFFFFF;
+}
+
+.chip-hover {
+  border-color: #D4A574;
+}
+
+/* ---------- 页脚说明 ---------- */
+.site-footer {
+  padding: 32rpx;
+  border-top: 2rpx solid #E8E0D5;
+  font-size: 24rpx;
+  color: #888888;
+  text-align: center;
+}

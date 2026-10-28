@@ -1,0 +1,192 @@
+<!-- 解忧慢递邮局 · 单页版：home / prefs / result / letter / favorites 五视图 -->
+<view class="page">
+  <view class="site-header">
+    <text class="site-title">✉️ 解忧慢递邮局</text>
+    <text class="site-subtitle">当你在校园里需要一点温暖时，我们会给你一封回信。</text>
+    <view class="btn-ghost" hover-class="btn-ghost-hover" bindtap="onOpenFavorites">📮 我的收藏</view>
+  </view>
+
+  <view class="site-main">
+    <!-- ========== 第 1 步：选择心情 ========== -->
+    <view class="view" wx:if="{{view === 'home'}}">
+      <view class="card">
+        <text class="step-label">第 1 步 · 此刻的心情</text>
+        <text class="section-title">此刻的你，感觉怎么样？</text>
+        <text class="section-desc">选一个最接近的就好，没有标准答案。</text>
+        <view class="mood-grid">
+          <view
+            class="mood-btn {{item.selected ? 'is-selected' : ''}}"
+            hover-class="mood-btn-hover"
+            wx:for="{{moods}}"
+            wx:key="key"
+            data-key="{{item.key}}"
+            bindtap="onMoodTap">
+            <text class="mood-emoji">{{item.emoji}}</text>
+            <text class="mood-label">{{item.label}}</text>
+            <text class="mood-desc">{{item.description}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- ========== 第 2 步：时间 + 偏好 + 社交舒适度 ========== -->
+    <view class="view" wx:if="{{view === 'prefs'}}">
+      <view class="card">
+        <text class="step-label">第 2 步 · 时间与偏好</text>
+        <text class="section-title">你现在有多少时间？</text>
+        <text class="section-desc">按真实可用的时间选，不用勉强。</text>
+        <view class="chip-row">
+          <view
+            class="chip {{item.selected ? 'is-selected' : ''}}"
+            hover-class="chip-hover"
+            wx:for="{{timeOptions}}"
+            wx:key="value"
+            data-value="{{item.value}}"
+            bindtap="onTimeTap">{{item.label}}</view>
+        </view>
+      </view>
+
+      <view class="card">
+        <text class="section-title">想要一个什么样的地方？</text>
+        <text class="section-desc">可以多选，也可以都不选。</text>
+        <view class="chip-row">
+          <view
+            class="chip {{item.selected ? 'is-selected' : ''}}"
+            hover-class="chip-hover"
+            wx:for="{{preferenceOptions}}"
+            wx:key="value"
+            data-value="{{item.value}}"
+            bindtap="onPreferenceTap">{{item.label}}</view>
+        </view>
+      </view>
+
+      <view class="card">
+        <text class="section-title">此刻想怎么和人相处？</text>
+        <text class="section-desc">人多或人少都可以，看你现在的状态。</text>
+        <view class="chip-row">
+          <view
+            class="chip {{item.selected ? 'is-selected' : ''}}"
+            hover-class="chip-hover"
+            wx:for="{{socialOptions}}"
+            wx:key="value"
+            data-value="{{item.value}}"
+            bindtap="onSocialTap">{{item.label}}</view>
+        </view>
+      </view>
+
+      <text class="hint">{{hint}}</text>
+
+      <view class="actions">
+        <button class="btn btn-primary" bindtap="onGenerate">生成我的回信</button>
+        <button class="btn btn-secondary" bindtap="onBackToHome">上一步</button>
+      </view>
+    </view>
+
+    <!-- ========== 第 3 步：推荐地点 ========== -->
+    <view class="view" wx:if="{{view === 'result'}}">
+      <view class="card">
+        <text class="step-label">第 3 步 · 推荐地点</text>
+        <text class="section-title">这些地方也许适合现在的你</text>
+        <text class="section-desc">选一个你想去的，就带回来一封回信。</text>
+        <text class="notice" wx:if="{{notice}}">{{notice}}</text>
+        <view class="scene-list">
+          <view
+            class="scene-card"
+            hover-class="scene-card-hover"
+            wx:for="{{scenes}}"
+            wx:key="id"
+            data-id="{{item.id}}"
+            bindtap="onSceneTap">
+            <text class="scene-type">{{item.type}}</text>
+            <text class="scene-name">{{item.name}}</text>
+            <text class="scene-desc">{{item.description}}</text>
+            <text class="scene-reason"><text class="scene-reason-strong">为什么推荐：</text>{{item.reason}}</text>
+            <text class="scene-action">👉 {{item.smallAction}}</text>
+          </view>
+        </view>
+      </view>
+
+      <view class="actions">
+        <button class="btn btn-secondary" bindtap="onBackToPrefs">重新选择</button>
+      </view>
+    </view>
+
+    <!-- ========== 回信卡 ========== -->
+    <view class="view" wx:if="{{view === 'letter'}}">
+      <view class="letter-card" wx:if="{{letter}}">
+        <text class="letter-stamp">💌</text>
+        <text class="letter-content">{{letter.content}}</text>
+        <view class="letter-meta">
+          <view class="letter-meta-item">
+            <text class="letter-meta-label">📍 推荐地点</text>
+            <text class="letter-meta-value">{{letter.place}}</text>
+          </view>
+          <view class="letter-meta-item">
+            <text class="letter-meta-label">📝 为什么是这里</text>
+            <text class="letter-meta-value">{{letter.reason}}</text>
+          </view>
+          <view class="letter-meta-item">
+            <text class="letter-meta-label">👉 现在就能做的小事</text>
+            <text class="letter-meta-value">{{letter.smallAction}}</text>
+          </view>
+        </view>
+        <text class="letter-ending">{{letter.ending}}</text>
+      </view>
+
+      <view class="actions actions-row">
+        <button class="btn {{favoriteActive ? 'btn-fav-active' : 'btn-secondary'}}" hover-class="btn-hover" bindtap="onToggleFavorite">{{favoriteActive ? '💌 已收藏' : '✉️ 收藏'}}</button>
+        <button
+          class="btn btn-secondary {{feedback ? 'is-disabled' : ''}}"
+          disabled="{{feedback !== ''}}"
+          bindtap="onFeedbackTap"
+          data-kind="good">{{feedback === 'good' ? '👍 已提交' : '👍 适合我'}}</button>
+        <button
+          class="btn btn-secondary {{feedback ? 'is-disabled' : ''}}"
+          disabled="{{feedback !== ''}}"
+          bindtap="onFeedbackTap"
+          data-kind="bad">{{feedback === 'bad' ? '👎 已提交' : '👎 不太适合我'}}</button>
+      </view>
+
+      <text class="feedback-note">{{feedbackTip}}</text>
+
+      <view class="actions">
+        <button class="btn btn-secondary" bindtap="onLetterBack">换一个地点</button>
+        <button class="btn btn-secondary" bindtap="onLetterHome">回到首页</button>
+      </view>
+    </view>
+
+    <!-- ========== 收藏列表 ========== -->
+    <view class="view" wx:if="{{view === 'favorites'}}">
+      <view class="card">
+        <text class="step-label">我的收藏</text>
+        <text class="section-title">收好的回信</text>
+
+        <view class="empty-state" wx:if="{{favorites.length === 0}}">
+          <text class="empty-title">还没有收藏的回信</text>
+          <text class="empty-hint">收到喜欢的回信时，点一下「收藏」就会出现在这里。</text>
+        </view>
+
+        <view class="favorites-list" wx:else>
+          <view class="favorite-item" wx:for="{{favorites}}" wx:key="sceneId">
+            <view class="favorite-meta">
+              <text>{{item.placeLabel}}</text>
+              <text>{{item.savedAtText}}</text>
+            </view>
+            <text class="favorite-content">{{item.letterContent}}</text>
+            <button
+              class="favorite-remove"
+              hover-class="btn-hover"
+              data-scene-id="{{item.sceneId}}"
+              bindtap="onRemoveFavorite">取消收藏</button>
+          </view>
+        </view>
+      </view>
+
+      <view class="actions">
+        <button class="btn btn-secondary" bindtap="onFavoritesBack">返回</button>
+      </view>
+    </view>
+  </view>
+
+  <view class="site-footer">收藏与反馈只保存在本机微信中，换设备或清除小程序缓存会丢失。</view>
+</view>
