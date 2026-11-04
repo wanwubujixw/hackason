@@ -1,0 +1,158 @@
+/* ============================================================
+ * 背景轻音乐按钮
+ * 只新增右下角悬浮控件，不改变原有页面布局与业务样式。
+ * ============================================================ */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.music-toggle {
+  position: fixed;
+  right: max(20px, env(safe-area-inset-right));
+  bottom: max(20px, env(safe-area-inset-bottom));
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  border: 1px solid var(--color-border);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.86);
+  color: var(--color-primary);
+  box-shadow: 0 6px 20px rgba(139, 94, 60, 0.16);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, color 0.2s ease,
+    background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.music-toggle:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 9px 24px rgba(139, 94, 60, 0.22);
+}
+
+.music-toggle:active {
+  transform: scale(0.96);
+}
+
+.music-toggle:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
+.music-toggle__icon {
+  width: 18px;
+  height: 18px;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.music-toggle__ring {
+  position: absolute;
+  inset: -5px;
+  border: 1.5px dashed rgba(212, 165, 116, 0);
+  border-radius: 50%;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease, border-color 0.25s ease;
+}
+
+.music-toggle.is-playing {
+  color: var(--color-primary);
+  background: rgba(245, 230, 211, 0.94);
+  border-color: var(--color-accent);
+}
+
+.music-toggle.is-playing .music-toggle__ring {
+  opacity: 0.55;
+  border-color: rgba(212, 165, 116, 0.7);
+  animation: music-orbit 9s linear infinite;
+}
+
+.music-toggle.is-playing .music-toggle__icon {
+  animation: music-breathe 3.2s ease-in-out infinite;
+}
+
+.music-toggle.is-unavailable {
+  color: #b0a79c;
+  cursor: not-allowed;
+  box-shadow: 0 4px 14px rgba(139, 94, 60, 0.1);
+}
+
+.music-toggle__tip {
+  position: absolute;
+  right: calc(100% + 10px);
+  padding: 4px 10px;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.96);
+  color: var(--color-text-light);
+  font-size: 12px;
+  line-height: 1.4;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateX(4px);
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.music-toggle:hover .music-toggle__tip,
+.music-toggle:focus-visible .music-toggle__tip {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+@keyframes music-orbit {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes music-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.08);
+  }
+}
+
+@media (max-width: 480px) {
+  .music-toggle {
+    right: max(14px, env(safe-area-inset-right));
+    bottom: max(14px, env(safe-area-inset-bottom));
+    width: 44px;
+    height: 44px;
+  }
+
+  .music-toggle__tip {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .music-toggle,
+  .music-toggle__icon,
+  .music-toggle__ring,
+  .music-toggle__tip {
+    transition: none;
+  }
+
+  .music-toggle.is-playing .music-toggle__ring,
+  .music-toggle.is-playing .music-toggle__icon {
+    animation: none;
+  }
+}
