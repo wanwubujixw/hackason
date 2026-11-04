@@ -77,7 +77,7 @@
 - timeRange: 时长数组（从 [5] / [15] / [30] / [5,15] / [15,30] / [5,15,30] 里选）
 - socialTags: 社交数组（从 alone / small / crowded 里选）
 - smallAction: 一个可执行的小行动
-- imagePath: 暂时留空字符串 ""
+- imagePath: 不用自己填，图片已统一接入（网页 WebP / 小程序本地打包）
 - dataSource: 写"已核实"（因为是你真实去过的），如果你编的就写"演示数据"
 
 不要改文件里的其他内容（顶部注释、import 语句、export { SCENES }），

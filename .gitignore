@@ -24,3 +24,8 @@ node_modules/
 # 不要把任何包含个人身份信息的文件提交到仓库
 # 如果有 .env 或私钥文件，确保在这里列出
 /miniprogram/project.private.config.json
+
+# ========== 预览二维码（临时凭证，禁止提交） ==========
+preview*.png
+*.qrcode.png
+mini-program-preview*

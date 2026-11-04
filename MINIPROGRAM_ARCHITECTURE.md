@@ -78,7 +78,7 @@ hackason/                         ← 仓库根目录（网页项目，保持原
 
 ### 🚧 待完善（代码中确认缺失或未做）
 
-- **场景图片已预留接入位**：`imagePath` 由 `CLOUD_IMAGE_BASE` 生成，当前前缀为空（卡片不显示图）；把 15 张图上传云存储并填写前缀后即可显示
+- **场景图片已本地打包**：15 张 JPEG 位于 `miniprogram/assets/scenes/`（约 1.1MB）。`REMOTE_IMAGE_BASE` 留空时使用 `/assets/scenes/...`；换成正式 AppID 并上传云存储后，填入 `cloud://.../scenes` 即可切换
 - **真机验证情况：待确认**（已知能在微信开发者工具中运行；真机预览、
   不同屏幕尺寸适配未找到验证记录）
 - `pages/logs/` 与 `utils/util.js` 是模板残留，未接入主流程
@@ -86,7 +86,7 @@ hackason/                         ← 仓库根目录（网页项目，保持原
 
 ### 🚫 明确不做（本阶段）
 
-- 微信登录、用户系统、网络请求、大模型 API、付费服务、定位 API；云开发仅用于图片存储（可选，不涉及登录与数据库）
+- 微信登录、用户系统、网络请求、大模型 API、付费服务、定位 API；当前不使用云开发（AppID 为测试号），未来换正式 AppID 后可选云存储
 - 多用户数据汇总（反馈只存本机，界面上已如实告知用户）
 
 ---
@@ -106,7 +106,7 @@ hackason/                         ← 仓库根目录（网页项目，保持原
   timeRange: [15, 30],          // number[]，适合时长，只能取 5 / 15 / 30，可多选
   socialTags: ["small"],        // string[]，只能取 alone / small / crowded
   smallAction: "……",            // string，一句话小行动建议
-  imagePath: "",                // string，云存储 fileID；由 CLOUD_IMAGE_BASE 生成，留空则不显示
+  imagePath: "",                // string，本地 /assets/scenes/... 或云存储 fileID
   dataSource: "已核实"          // string，只能填 "已核实" 或 "演示数据"，按实际情况填写，不许伪装
 }
 ```
