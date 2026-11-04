@@ -2,9 +2,9 @@
  * 背景轻音乐控制（B 模块 UI 辅助）
  *
  * 规则：
- * - 按当前本地时间划分清晨 / 白天 / 傍晚 / 夜晚四个时段
- * - 首次播放或一首结束后，从当前时段曲库中随机选一首
- * - 切换页面不影响播放；刷新后只恢复开关偏好，不绕过自动播放限制
+ * - 每次打开页面时，按当前本地时间划分清晨 / 白天 / 傍晚 / 夜晚四个时段
+ * - 从对应时段曲库中随机选一首，之后单曲循环这一首
+ * - 切换页面不影响播放；刷新后重新随机选曲，但只恢复开关偏好，不绕过自动播放限制
  * - 音频均为项目内合成，不依赖外部音乐链接
  */
 
@@ -66,6 +66,7 @@ let currentTrack = null;
 let currentSlot = null;
 let isPlaying = false;
 let wantPlaying = false;
+let hasStarted = false;
 
 function getTimeSlot(date) {
   const hour = date.getHours();
@@ -107,7 +108,7 @@ function announce(message) {
   }
 }
 
-function updateButton(playing) {
+function updateButton(playing, silent) {
   isPlaying = playing;
   button.classList.toggle("is-playing", playing);
   if (playing) {
@@ -124,7 +125,9 @@ function updateButton(playing) {
     tooltip.textContent = currentTrack.title;
   }
 
-  announce(playing ? `正在播放：${name}` : "背景音乐已暂停");
+  if (!silent) {
+    announce(playing ? `正在播放：${name}` : "背景音乐已暂停");
+  }
 }
 
 function markUnavailable() {
@@ -145,7 +148,7 @@ function ensureAudio() {
   if (!audio) {
     audio = new Audio();
   }
-  audio.loop = false;
+  audio.loop = true;
   audio.preload = "none";
   audio.volume = VOLUME;
   audio.setAttribute("playsinline", "");
@@ -153,7 +156,6 @@ function ensureAudio() {
   audio.addEventListener("play", () => updateButton(true));
   audio.addEventListener("pause", () => updateButton(false));
   audio.addEventListener("error", markUnavailable);
-  audio.addEventListener("ended", handleTrackEnded);
 
   return audio;
 }
@@ -164,12 +166,13 @@ function selectTrack(slot, excludeSrc) {
   currentSlot = slot;
   audio.src = track.src;
   button.classList.remove("is-unavailable");
-  updateButton(false);
+  updateButton(false, true);
 }
 
 async function playSelected() {
   try {
     await audio.play();
+    hasStarted = true;
     writePreference("on");
   } catch (error) {
     wantPlaying = false;
@@ -180,15 +183,6 @@ async function playSelected() {
       markUnavailable();
     }
   }
-}
-
-function handleTrackEnded() {
-  if (!wantPlaying) {
-    return;
-  }
-  const slot = getTimeSlot(new Date());
-  selectTrack(slot, currentTrack ? currentTrack.src : null);
-  playSelected();
 }
 
 async function toggleMusic() {
@@ -208,8 +202,8 @@ async function toggleMusic() {
   wantPlaying = true;
   const slot = getTimeSlot(new Date());
 
-  // 首次播放、时段变化或刚恢复偏好时，重新按时段随机选曲
-  if (!currentTrack || !currentSlot || currentSlot.key !== slot.key) {
+  // 首次播放前若跨了时段，重新按当前时段选曲；播放开始后只循环这一首
+  if (!hasStarted && (!currentTrack || !currentSlot || currentSlot.key !== slot.key)) {
     selectTrack(slot, currentTrack ? currentTrack.src : null);
   }
 
@@ -220,11 +214,11 @@ function restorePreference() {
   if (readPreference() !== "on") {
     return;
   }
-  const slot = getTimeSlot(new Date());
+  const name = currentTrack ? `${currentSlot.label} · ${currentTrack.title}` : "背景音乐";
   button.classList.add("is-resume");
-  button.title = `点击继续播放${slot.label}背景音乐`;
+  button.title = `点击继续播放${name}`;
   button.setAttribute("aria-label", button.title);
-  announce(`上次音乐处于开启状态，点击按钮继续播放${slot.label}背景音乐`);
+  announce(`上次音乐处于开启状态，点击按钮继续播放${name}`);
 }
 
 function initMusicPlayer() {
@@ -237,6 +231,9 @@ function initMusicPlayer() {
 
   button.addEventListener("click", toggleMusic);
   ensureAudio();
+
+  // 每次打开页面先按时段随机选好一首，等待用户点击播放
+  selectTrack(getTimeSlot(new Date()), null);
   restorePreference();
 }
 
