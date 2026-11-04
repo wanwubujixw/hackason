@@ -75,6 +75,7 @@ let silentMode = false;
 let unlocking = false;
 let gestureBound = false;
 let fadeFrame = null;
+let hintTimer = null;
 
 function getTimeSlot(date) {
   const hour = date.getHours();
@@ -116,15 +117,26 @@ function announce(message) {
   }
 }
 
-function showHint(text) {
+function showHint(text, autoHideMs) {
   if (!hint) {
     return;
   }
+  if (hintTimer) {
+    window.clearTimeout(hintTimer);
+    hintTimer = null;
+  }
   hint.textContent = text;
   hint.hidden = false;
+  if (autoHideMs) {
+    hintTimer = window.setTimeout(hideHint, autoHideMs);
+  }
 }
 
 function hideHint() {
+  if (hintTimer) {
+    window.clearTimeout(hintTimer);
+    hintTimer = null;
+  }
   if (hint) {
     hint.hidden = true;
   }
@@ -260,6 +272,7 @@ async function playSelected() {
     hasStarted = true;
     writePreference("on");
     fadeTo(VOLUME, FADE_IN_MS);
+    showHint(`轻音乐 · ${currentTrack.title}`, 4000);
   } catch (error) {
     wantPlaying = false;
     updateButton(false);
@@ -349,6 +362,7 @@ function enableSound() {
   audio.volume = 0;
   fadeTo(VOLUME, FADE_IN_MS);
   updateButton(true);
+  showHint(`轻音乐 · ${currentTrack.title}`, 4000);
 
   window.setTimeout(() => {
     unlocking = false;
