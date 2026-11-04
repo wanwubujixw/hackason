@@ -65,6 +65,7 @@ let audio = null;
 let button = null;
 let statusRegion = null;
 let tooltip = null;
+let hint = null;
 let currentTrack = null;
 let currentSlot = null;
 let isPlaying = false;
@@ -115,10 +116,29 @@ function announce(message) {
   }
 }
 
+function showHint(text) {
+  if (!hint) {
+    return;
+  }
+  hint.textContent = text;
+  hint.hidden = false;
+}
+
+function hideHint() {
+  if (hint) {
+    hint.hidden = true;
+  }
+}
+
 function updateButton(playing, quiet) {
   isPlaying = playing;
   button.classList.toggle("is-playing", playing);
   button.classList.remove("is-resume");
+
+  // 已经开始有声播放后，不再显示引导气泡
+  if (playing && !silentMode) {
+    hideHint();
+  }
 
   const name = currentTrack ? `${currentSlot.label} · ${currentTrack.title}` : "背景音乐";
   let label;
@@ -149,6 +169,7 @@ function updateButton(playing, quiet) {
 function markUnavailable() {
   wantPlaying = false;
   updateButton(false);
+  hideHint();
   button.classList.add("is-unavailable");
   button.setAttribute("aria-label", "背景音乐暂不可用");
   button.title = "音乐文件暂不可用";
@@ -263,12 +284,14 @@ async function enterSilentMode() {
     await audio.play();
     bindGestureUnlock();
     updateButton(true);
+    showHint("点这里开启声音");
   } catch (e) {
     silentMode = false;
     wantPlaying = false;
     updateButton(false);
     // 连静音播放也被拦截：等用户第一次点击/按键时再启动，无需点音乐按钮
     bindGestureStart();
+    showHint("点这里播放轻音乐");
   }
 }
 
@@ -349,6 +372,7 @@ async function toggleMusic() {
     wantPlaying = false;
     player.pause();
     writePreference("off");
+    hideHint();
     return;
   }
 
@@ -374,6 +398,7 @@ function initMusicPlayer() {
   button = document.getElementById("music-toggle");
   statusRegion = document.getElementById("music-status");
   tooltip = document.querySelector(".music-toggle__tip");
+  hint = document.querySelector(".music-toggle__hint");
   if (!button) {
     return;
   }

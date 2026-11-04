@@ -114,6 +114,49 @@
   transform: translateX(0);
 }
 
+/* ---------- 自动播放被拦截时的引导气泡 ---------- */
+.music-toggle__hint {
+  position: absolute;
+  right: calc(100% + 16px);
+  top: 50%;
+  padding: 7px 12px;
+  border: 1px solid var(--color-accent);
+  border-radius: 999px;
+  background: rgba(255, 251, 243, 0.97);
+  color: var(--color-primary);
+  font-size: 12px;
+  line-height: 1.4;
+  white-space: nowrap;
+  box-shadow: 0 4px 14px rgba(139, 94, 60, 0.14);
+  pointer-events: none;
+  transform: translateY(-50%);
+  animation: music-hint-float 2.6s ease-in-out infinite;
+}
+
+.music-toggle__hint::after {
+  content: "";
+  position: absolute;
+  left: 100%;
+  top: 50%;
+  width: 7px;
+  height: 7px;
+  margin-left: -4px;
+  border-top: 1px solid var(--color-accent);
+  border-right: 1px solid var(--color-accent);
+  background: rgba(255, 251, 243, 0.97);
+  transform: translateY(-50%) rotate(45deg);
+}
+
+@keyframes music-hint-float {
+  0%,
+  100% {
+    transform: translate(0, -50%);
+  }
+  50% {
+    transform: translate(-3px, -50%);
+  }
+}
+
 @keyframes music-orbit {
   to {
     transform: rotate(360deg);
@@ -147,10 +190,12 @@
   .music-toggle,
   .music-toggle__icon,
   .music-toggle__ring,
-  .music-toggle__tip {
+  .music-toggle__tip,
+  .music-toggle__hint {
     transition: none;
   }
 
+  .music-toggle__hint,
   .music-toggle.is-playing .music-toggle__ring,
   .music-toggle.is-playing .music-toggle__icon {
     animation: none;
