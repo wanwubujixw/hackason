@@ -101,6 +101,13 @@ function renderMoods() {
         <span class="mood-desc">${mood.description}</span>
       </button>`;
   }).join("");
+
+  // 心情按钮一次性渲染完成后，隐藏骨架并整体淡入
+  const loading = $("mood-loading");
+  if (loading) {
+    loading.classList.add("is-hidden");
+  }
+  $("mood-list").classList.add("is-ready");
 }
 
 function onMoodSelect(moodKey) {

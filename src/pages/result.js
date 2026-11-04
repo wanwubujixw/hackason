@@ -12,9 +12,10 @@
  * @param {(scene: Object) => void} onSelect - 用户点选某个场景时的回调
  */
 function renderSceneList(container, scenes, onSelect) {
+  container.classList.remove("is-images-ready");
   container.innerHTML = scenes.map(scene => `
     <button type="button" class="scene-card" data-scene-id="${scene.id}">
-      ${scene.imagePath ? `<img class="scene-image" src="${scene.imagePath}" alt="${scene.name}" loading="lazy" onerror="this.remove()">` : ""}
+      ${scene.imagePath ? `<span class="scene-media"><img class="scene-image" src="${scene.imagePath}" alt="${scene.name}" loading="eager" decoding="async"></span>` : ""}
       <span class="scene-type">${scene.type}</span>
       <span class="scene-name">${scene.name}</span>
       <span class="scene-desc">${scene.description}</span>
@@ -30,6 +31,49 @@ function renderSceneList(container, scenes, onSelect) {
         onSelect(scene);
       }
     });
+  });
+
+  revealSceneImages(container);
+}
+
+/**
+ * 等这一批场景图片全部加载完（或失败/超时）后，再整体淡入，
+ * 避免三张卡片各图逐张弹出造成的观感抖动。
+ * @param {HTMLElement} container - 场景列表容器
+ */
+function revealSceneImages(container) {
+  const images = Array.from(container.querySelectorAll(".scene-image"));
+  let finished = false;
+
+  if (images.length === 0) {
+    container.classList.add("is-images-ready");
+    return;
+  }
+
+  let pending = images.length;
+  const finish = () => {
+    if (finished) {
+      return;
+    }
+    finished = true;
+    clearTimeout(timer);
+    container.classList.add("is-images-ready");
+  };
+  const timer = setTimeout(finish, 5000);
+
+  images.forEach(img => {
+    const done = () => {
+      pending -= 1;
+      if (pending === 0) {
+        finish();
+      }
+    };
+    if (img.complete) {
+      done();
+      return;
+    }
+    img.addEventListener("load", done, { once: true });
+    img.addEventListener("error", done, { once: true });
   });
 }
 
