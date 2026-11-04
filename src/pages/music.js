@@ -4,12 +4,15 @@
  * 规则：
  * - 每次打开页面时，按当前本地时间划分清晨 / 白天 / 傍晚 / 夜晚四个时段
  * - 从对应时段曲库中随机选一首，之后单曲循环这一首
- * - 切换页面不影响播放；刷新后重新随机选曲，但只恢复开关偏好，不绕过自动播放限制
+ * - 默认进入页面即自动播放；浏览器拦截有声自动播放时先静音播放，首次交互后再渐入声音
+ * - 音量从 0 缓慢升到 0.3，避免打开页面时突然炸麦
+ * - 切换页面不影响播放；用户主动暂停会记住偏好，下次进入不再自动播放
  * - 音频均为项目内合成，不依赖外部音乐链接
  */
 
 const PREF_KEY = "jyo_music_pref";
 const VOLUME = 0.3;
+const FADE_IN_MS = 4000;
 
 const TIME_SLOTS = [
   {
@@ -67,6 +70,10 @@ let currentSlot = null;
 let isPlaying = false;
 let wantPlaying = false;
 let hasStarted = false;
+let silentMode = false;
+let unlocking = false;
+let gestureBound = false;
+let fadeFrame = null;
 
 function getTimeSlot(date) {
   const hour = date.getHours();
@@ -108,25 +115,34 @@ function announce(message) {
   }
 }
 
-function updateButton(playing, silent) {
+function updateButton(playing, quiet) {
   isPlaying = playing;
   button.classList.toggle("is-playing", playing);
-  if (playing) {
-    button.classList.remove("is-resume");
-  }
+  button.classList.remove("is-resume");
 
   const name = currentTrack ? `${currentSlot.label} · ${currentTrack.title}` : "背景音乐";
-  const label = playing ? `暂停${name}` : `播放${name}`;
+  let label;
+  if (playing) {
+    label = silentMode ? `开启声音：${name}` : `暂停：${name}`;
+  } else {
+    label = `播放：${name}`;
+  }
   button.setAttribute("aria-pressed", String(playing));
   button.setAttribute("aria-label", label);
   button.title = label;
 
   if (tooltip && currentTrack) {
-    tooltip.textContent = currentTrack.title;
+    tooltip.textContent = silentMode ? "点击开启声音" : currentTrack.title;
   }
 
-  if (!silent) {
-    announce(playing ? `正在播放：${name}` : "背景音乐已暂停");
+  if (!quiet) {
+    if (!playing) {
+      announce("背景音乐已暂停");
+    } else if (silentMode) {
+      announce("背景音乐正在静音播放，点击页面任意位置开启声音");
+    } else {
+      announce(`正在播放：${name}`);
+    }
   }
 }
 
@@ -150,14 +166,58 @@ function ensureAudio() {
   }
   audio.loop = true;
   audio.preload = "none";
-  audio.volume = VOLUME;
+  audio.volume = 0;
+  audio.muted = false;
   audio.setAttribute("playsinline", "");
 
   audio.addEventListener("play", () => updateButton(true));
-  audio.addEventListener("pause", () => updateButton(false));
+  audio.addEventListener("pause", () => {
+    updateButton(false);
+    cancelFade();
+    if (!wantPlaying) {
+      return;
+    }
+    if (unlocking) {
+      // 解除静音被浏览器策略打断，退回静音续播并重新等待用户操作
+      unlocking = false;
+      enterSilentMode();
+      return;
+    }
+    enterSilentMode();
+  });
   audio.addEventListener("error", markUnavailable);
 
   return audio;
+}
+
+function cancelFade() {
+  if (fadeFrame) {
+    cancelAnimationFrame(fadeFrame);
+    fadeFrame = null;
+  }
+}
+
+/**
+ * 音量渐变：从当前音量平滑过渡到目标音量，避免突然出声
+ * @param {number} target   - 目标音量（0~1）
+ * @param {number} duration - 渐变时长（毫秒）
+ */
+function fadeTo(target, duration) {
+  cancelFade();
+  const from = audio.volume;
+  const startedAt = performance.now();
+
+  const step = (now) => {
+    const progress = Math.min(1, (now - startedAt) / duration);
+    audio.volume = Math.max(0, Math.min(1, from + (target - from) * progress));
+    if (progress < 1) {
+      fadeFrame = requestAnimationFrame(step);
+    } else {
+      fadeFrame = null;
+    }
+  };
+
+  fadeFrame = requestAnimationFrame(step);
 }
 
 function selectTrack(slot, excludeSrc) {
@@ -170,19 +230,83 @@ function selectTrack(slot, excludeSrc) {
 }
 
 async function playSelected() {
+  wantPlaying = true;
+  audio.muted = false;
+  audio.volume = 0;
+
   try {
     await audio.play();
     hasStarted = true;
     writePreference("on");
+    fadeTo(VOLUME, FADE_IN_MS);
   } catch (error) {
     wantPlaying = false;
     updateButton(false);
     if (error && error.name === "NotAllowedError") {
-      announce("请再次点击播放背景音乐");
+      await enterSilentMode();
     } else if (error && (error.name === "NotSupportedError" || error.name === "NotReadableError")) {
       markUnavailable();
     }
   }
+}
+
+/**
+ * 有声自动播放被浏览器拦截时，先静音播放，
+ * 等用户第一次点击/按键后再解除静音并渐入音量。
+ */
+async function enterSilentMode() {
+  silentMode = true;
+  audio.muted = true;
+  audio.volume = 0;
+
+  try {
+    await audio.play();
+    bindGestureUnlock();
+    updateButton(true);
+  } catch (e) {
+    silentMode = false;
+    wantPlaying = false;
+    updateButton(false);
+    announce("点击按钮即可播放背景音乐");
+  }
+}
+
+function bindGestureUnlock() {
+  if (gestureBound) {
+    return;
+  }
+  gestureBound = true;
+
+  const unlock = (event) => {
+    // 点击音乐按钮本身交给 toggleMusic 处理，避免刚开启声音又被暂停
+    if (event && event.target && button.contains(event.target)) {
+      return;
+    }
+    document.removeEventListener("pointerdown", unlock, true);
+    document.removeEventListener("keydown", unlock, true);
+    gestureBound = false;
+    enableSound();
+  };
+
+  document.addEventListener("pointerdown", unlock, true);
+  document.addEventListener("keydown", unlock, true);
+}
+
+function enableSound() {
+  if (!silentMode || !audio) {
+    return;
+  }
+
+  silentMode = false;
+  unlocking = true;
+  audio.muted = false;
+  audio.volume = 0;
+  fadeTo(VOLUME, FADE_IN_MS);
+  updateButton(true);
+
+  window.setTimeout(() => {
+    unlocking = false;
+  }, 600);
 }
 
 async function toggleMusic() {
@@ -192,6 +316,12 @@ async function toggleMusic() {
 
   const player = ensureAudio();
 
+  // 正在静音播放时，点击按钮只负责把声音渐入
+  if (silentMode) {
+    enableSound();
+    return;
+  }
+
   if (isPlaying) {
     wantPlaying = false;
     player.pause();
@@ -199,7 +329,6 @@ async function toggleMusic() {
     return;
   }
 
-  wantPlaying = true;
   const slot = getTimeSlot(new Date());
 
   // 首次播放前若跨了时段，重新按当前时段选曲；播放开始后只循环这一首
@@ -210,15 +339,12 @@ async function toggleMusic() {
   await playSelected();
 }
 
-function restorePreference() {
-  if (readPreference() !== "on") {
-    return;
+async function autoplay() {
+  const slot = getTimeSlot(new Date());
+  if (!currentTrack || !currentSlot || currentSlot.key !== slot.key) {
+    selectTrack(slot, null);
   }
-  const name = currentTrack ? `${currentSlot.label} · ${currentTrack.title}` : "背景音乐";
-  button.classList.add("is-resume");
-  button.title = `点击继续播放${name}`;
-  button.setAttribute("aria-label", button.title);
-  announce(`上次音乐处于开启状态，点击按钮继续播放${name}`);
+  await playSelected();
 }
 
 function initMusicPlayer() {
@@ -232,9 +358,13 @@ function initMusicPlayer() {
   button.addEventListener("click", toggleMusic);
   ensureAudio();
 
-  // 每次打开页面先按时段随机选好一首，等待用户点击播放
+  // 每次打开页面先按时段随机选好一首
   selectTrack(getTimeSlot(new Date()), null);
-  restorePreference();
+
+  // 默认自动播放；用户上次主动暂停过则保持安静，等其再次点击
+  if (readPreference() !== "off") {
+    autoplay();
+  }
 }
 
 if (document.readyState === "loading") {
