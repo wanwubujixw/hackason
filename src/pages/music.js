@@ -267,8 +267,31 @@ async function enterSilentMode() {
     silentMode = false;
     wantPlaying = false;
     updateButton(false);
-    announce("点击按钮即可播放背景音乐");
+    // 连静音播放也被拦截：等用户第一次点击/按键时再启动，无需点音乐按钮
+    bindGestureStart();
   }
+}
+
+function bindGestureStart() {
+  if (gestureBound) {
+    return;
+  }
+  gestureBound = true;
+
+  const start = (event) => {
+    if (event && event.target && button.contains(event.target)) {
+      return;
+    }
+    document.removeEventListener("pointerdown", start, true);
+    document.removeEventListener("keydown", start, true);
+    gestureBound = false;
+    if (!wantPlaying && readPreference() !== "off") {
+      playSelected();
+    }
+  };
+
+  document.addEventListener("pointerdown", start, true);
+  document.addEventListener("keydown", start, true);
 }
 
 function bindGestureUnlock() {
