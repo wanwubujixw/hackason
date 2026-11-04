@@ -64,7 +64,6 @@ const TIME_SLOTS = [
 let audio = null;
 let button = null;
 let statusRegion = null;
-let tooltip = null;
 let hint = null;
 let currentTrack = null;
 let currentSlot = null;
@@ -75,7 +74,6 @@ let silentMode = false;
 let unlocking = false;
 let gestureBound = false;
 let fadeFrame = null;
-let hintTimer = null;
 
 function getTimeSlot(date) {
   const hour = date.getHours();
@@ -117,26 +115,15 @@ function announce(message) {
   }
 }
 
-function showHint(text, autoHideMs) {
+function showHint(text) {
   if (!hint) {
     return;
   }
-  if (hintTimer) {
-    window.clearTimeout(hintTimer);
-    hintTimer = null;
-  }
   hint.textContent = text;
   hint.hidden = false;
-  if (autoHideMs) {
-    hintTimer = window.setTimeout(hideHint, autoHideMs);
-  }
 }
 
 function hideHint() {
-  if (hintTimer) {
-    window.clearTimeout(hintTimer);
-    hintTimer = null;
-  }
   if (hint) {
     hint.hidden = true;
   }
@@ -147,9 +134,11 @@ function updateButton(playing, quiet) {
   button.classList.toggle("is-playing", playing);
   button.classList.remove("is-resume");
 
-  // 已经开始有声播放后，不再显示引导气泡
-  if (playing && !silentMode) {
-    hideHint();
+  // 常驻中文标注：未播放提示可点击，播放时显示曲目
+  if (playing) {
+    showHint(silentMode ? "点击此处开启声音" : `轻音乐 · ${currentTrack ? currentTrack.title : ""}`);
+  } else {
+    showHint("点击此处播放音乐");
   }
 
   const name = currentTrack ? `${currentSlot.label} · ${currentTrack.title}` : "背景音乐";
@@ -162,10 +151,6 @@ function updateButton(playing, quiet) {
   button.setAttribute("aria-pressed", String(playing));
   button.setAttribute("aria-label", label);
   button.title = label;
-
-  if (tooltip && currentTrack) {
-    tooltip.textContent = silentMode ? "点击开启声音" : currentTrack.title;
-  }
 
   if (!quiet) {
     if (!playing) {
@@ -272,7 +257,6 @@ async function playSelected() {
     hasStarted = true;
     writePreference("on");
     fadeTo(VOLUME, FADE_IN_MS);
-    showHint(`轻音乐 · ${currentTrack.title}`, 4000);
   } catch (error) {
     wantPlaying = false;
     updateButton(false);
@@ -297,14 +281,14 @@ async function enterSilentMode() {
     await audio.play();
     bindGestureUnlock();
     updateButton(true);
-    showHint("点这里开启声音");
+    showHint("点击此处开启声音");
   } catch (e) {
     silentMode = false;
     wantPlaying = false;
     updateButton(false);
     // 连静音播放也被拦截：等用户第一次点击/按键时再启动，无需点音乐按钮
     bindGestureStart();
-    showHint("点这里播放轻音乐");
+    showHint("点击此处播放音乐");
   }
 }
 
@@ -362,7 +346,6 @@ function enableSound() {
   audio.volume = 0;
   fadeTo(VOLUME, FADE_IN_MS);
   updateButton(true);
-  showHint(`轻音乐 · ${currentTrack.title}`, 4000);
 
   window.setTimeout(() => {
     unlocking = false;
@@ -386,7 +369,6 @@ async function toggleMusic() {
     wantPlaying = false;
     player.pause();
     writePreference("off");
-    hideHint();
     return;
   }
 
@@ -411,7 +393,6 @@ async function autoplay() {
 function initMusicPlayer() {
   button = document.getElementById("music-toggle");
   statusRegion = document.getElementById("music-status");
-  tooltip = document.querySelector(".music-toggle__tip");
   hint = document.querySelector(".music-toggle__hint");
   if (!button) {
     return;

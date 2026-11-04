@@ -18,7 +18,7 @@
 .music-toggle {
   position: fixed;
   left: 50%;
-  bottom: max(20px, env(safe-area-inset-bottom));
+  bottom: max(64px, calc(env(safe-area-inset-bottom) + 56px));
   z-index: 30;
   display: flex;
   align-items: center;
@@ -92,30 +92,7 @@
   box-shadow: 0 4px 14px rgba(139, 94, 60, 0.1);
 }
 
-.music-toggle__tip {
-  position: absolute;
-  right: calc(100% + 10px);
-  padding: 4px 10px;
-  border: 1px solid var(--color-border);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.96);
-  color: var(--color-text-light);
-  font-size: 12px;
-  line-height: 1.4;
-  white-space: nowrap;
-  opacity: 0;
-  transform: translateX(4px);
-  pointer-events: none;
-  transition: opacity 0.2s ease, transform 0.2s ease;
-}
-
-.music-toggle:hover .music-toggle__tip,
-.music-toggle:focus-visible .music-toggle__tip {
-  opacity: 1;
-  transform: translateX(0);
-}
-
-/* ---------- 自动播放被拦截时的引导气泡 ---------- */
+/* ---------- 常驻中文标注 / 自动播放被拦截提示 ---------- */
 .music-toggle__hint {
   position: absolute;
   left: 50%;
@@ -172,32 +149,13 @@
   }
 }
 
-/* 居中悬浮按钮会压到页脚文字，给页脚留出安全距离 */
-.site-footer {
-  padding-bottom: 132px;
-}
-
-@media (max-width: 480px) {
-  .site-footer {
-    padding-bottom: 150px;
-  }
-}
-
+/* 按钮浮在页脚文字上方，页脚文字保持页面最底部 */
 @media (max-width: 480px) {
   .music-toggle {
     left: 50%;
-    bottom: max(14px, env(safe-area-inset-bottom));
+    bottom: max(58px, calc(env(safe-area-inset-bottom) + 50px));
     width: 44px;
     height: 44px;
-  }
-
-  .music-toggle__tip {
-    display: none;
-  }
-
-  /* 手机上页脚文字更靠下，气泡再抬高一点避免压住文字 */
-  .music-toggle__hint {
-    bottom: calc(100% + 80px);
   }
 }
 
@@ -205,7 +163,6 @@
   .music-toggle,
   .music-toggle__icon,
   .music-toggle__ring,
-  .music-toggle__tip,
   .music-toggle__hint {
     transition: none;
   }
