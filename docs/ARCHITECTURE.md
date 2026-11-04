@@ -58,7 +58,7 @@
   timeRange: [15, 30],          // number[], 适合的可用时长（分钟）
   socialTags: ["alone"],        // string[], 社交舒适度标签
   smallAction: "找一本书...",    // string, 可执行的小行动
-  imagePath: "",                // string, 图片路径（暂时为空）
+  imagePath: "assets/images/scenes/xxx.webp", // string, 图片路径；小程序版为云存储 fileID，可为空
   dataSource: "演示数据"        // string, 必须注明数据来源
 }
 ```
