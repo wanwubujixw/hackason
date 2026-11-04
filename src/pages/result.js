@@ -14,6 +14,7 @@
 function renderSceneList(container, scenes, onSelect) {
   container.innerHTML = scenes.map(scene => `
     <button type="button" class="scene-card" data-scene-id="${scene.id}">
+      ${scene.imagePath ? `<img class="scene-image" src="${scene.imagePath}" alt="${scene.name}" loading="lazy" onerror="this.remove()">` : ""}
       <span class="scene-type">${scene.type}</span>
       <span class="scene-name">${scene.name}</span>
       <span class="scene-desc">${scene.description}</span>

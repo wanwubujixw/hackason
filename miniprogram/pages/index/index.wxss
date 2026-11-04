@@ -90,6 +90,15 @@
   flex-direction: column;
 }
 
+.scene-image {
+  display: block;
+  width: 100%;
+  height: 420rpx;
+  margin-bottom: 20rpx;
+  border-radius: 16rpx;
+  background: #F5E6D3;
+}
+
 .scene-card {
   display: flex;
   flex-direction: column;

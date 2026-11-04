@@ -97,6 +97,12 @@
             wx:key="id"
             data-id="{{item.id}}"
             bindtap="onSceneTap">
+            <image
+              wx:if="{{item.imagePath}}"
+              class="scene-image"
+              src="{{item.imagePath}}"
+              mode="aspectFill"
+              lazy-load />
             <text class="scene-type">{{item.type}}</text>
             <text class="scene-name">{{item.name}}</text>
             <text class="scene-desc">{{item.description}}</text>

@@ -40,9 +40,14 @@
  * @property {number[]} timeRange     - 适合的可用时长（分钟）：5 / 15 / 30
  * @property {string[]} socialTags    - 社交舒适度：alone（独处）/ small（少量人群）/ crowded（热闹）
  * @property {string} smallAction     - 可立即执行的小行动建议（一句话）
- * @property {string} imagePath       - 图片路径（暂时留空，后续替换为真实图片）
+ * @property {string} imagePath       - 图片路径（微信云存储 fileID，留空则不显示）
  * @property {string} dataSource      - 数据来源说明（"已核实" 或 "演示数据"）
  */
+
+// 微信云开发：图片上传到云存储后，把下面的前缀改成对应环境的 fileID 前缀，
+// 形如 "cloud://your-env-id.xxxx/scenes"；留空时场景卡片不显示图片。
+const CLOUD_IMAGE_BASE = "";
+const cloudImage = (fileName) => (CLOUD_IMAGE_BASE ? `${CLOUD_IMAGE_BASE}/${fileName}` : "");
 
 const SCENES = [
   {
@@ -56,7 +61,7 @@ const SCENES = [
     timeRange: [15, 30],
     socialTags: ["small"],
     smallAction: "去打半小时球，休息时看看橘猫在不在窝里。",
-    imagePath: "",
+    imagePath: cloudImage("scene-001-laowangqiuchang-cat.jpg"),
     dataSource: "已核实"
   },
   {
@@ -70,7 +75,7 @@ const SCENES = [
     timeRange: [15, 30],
     socialTags: ["alone"],
     smallAction: "挑一个窗边的座位坐下，看窗外的景色发发呆。",
-    imagePath: "",
+    imagePath: cloudImage("scene-002-wenxueyuan-chuangbian.jpg"),
     dataSource: "已核实"
   },
   {
@@ -84,7 +89,7 @@ const SCENES = [
     timeRange: [15, 30],
     socialTags: ["crowded", "small"],
     smallAction: "找看台中间的位置坐下，认认真真看完一整场电影。",
-    imagePath: "",
+    imagePath: cloudImage("scene-003-lutian-dianyingchang.jpg"),
     dataSource: "已核实"
   },
   {
@@ -98,7 +103,7 @@ const SCENES = [
     timeRange: [15, 30],
     socialTags: ["small", "crowded"],
     smallAction: "戴上耳机听首歌，跟着节奏沿跑道慢跑一圈。",
-    imagePath: "",
+    imagePath: cloudImage("scene-004-youmingtiyuchang.jpg"),
     dataSource: "已核实"
   },
   {
@@ -112,7 +117,7 @@ const SCENES = [
     timeRange: [5, 15],
     socialTags: ["alone"],
     smallAction: "在广场边站五分钟，看看来往的人都在忙些什么。",
-    imagePath: "",
+    imagePath: cloudImage("scene-005-yundaiyingguangchang.jpg"),
     dataSource: "已核实"
   },
   {
@@ -126,7 +131,7 @@ const SCENES = [
     timeRange: [5, 15],
     socialTags: ["alone"],
     smallAction: "在一楼挑个靠边的位子，慢慢吃完一整顿饭。",
-    imagePath: "",
+    imagePath: cloudImage("scene-006-qinyuanchunshitang.jpg"),
     dataSource: "已核实"
   },
   {
@@ -140,7 +145,7 @@ const SCENES = [
     timeRange: [5, 15],
     socialTags: ["small", "crowded"],
     smallAction: "去一楼自助小碗菜区，拿一个自己没吃过的菜。",
-    imagePath: "",
+    imagePath: cloudImage("scene-007-guixiangyuanshitang.jpg"),
     dataSource: "已核实"
   },
   {
@@ -154,7 +159,7 @@ const SCENES = [
     timeRange: [5, 15, 30],
     socialTags: ["alone"],
     smallAction: "给自己定一个小目标，学完就起身休息。",
-    imagePath: "",
+    imagePath: cloudImage("scene-008-nanhu-shuiba.jpg"),
     dataSource: "已核实"
   },
   {
@@ -168,7 +173,7 @@ const SCENES = [
     timeRange: [5, 15],
     socialTags: ["alone", "small"],
     smallAction: "在门口「爱我中华」花圃边站一站，数一数里面种了几种花。",
-    imagePath: "",
+    imagePath: cloudImage("scene-009-wenhua-gongshulin-aiwozhonghua.jpg"),
     dataSource: "已核实"
   },
   {
@@ -182,7 +187,7 @@ const SCENES = [
     timeRange: [15, 30],
     socialTags: ["small", "crowded"],
     smallAction: "点一杯奶茶，赶上有人弹琴就多坐一会儿。",
-    imagePath: "",
+    imagePath: cloudImage("scene-010-nanhu-shitang-piano.jpg"),
     dataSource: "已核实"
   },
   {
@@ -196,7 +201,7 @@ const SCENES = [
     timeRange: [15, 30],
     socialTags: ["small", "crowded"],
     smallAction: "去场边投十个篮，进几个都算赢。",
-    imagePath: "",
+    imagePath: cloudImage("scene-011-nanhu-lanqiuchang.jpg"),
     dataSource: "已核实"
   },
   {
@@ -210,7 +215,7 @@ const SCENES = [
     timeRange: [15, 30],
     socialTags: ["alone", "small"],
     smallAction: "坐进藤椅里，抬头数一数能看见几种绿。",
-    imagePath: "",
+    imagePath: cloudImage("scene-012-nanhu-kongdi.jpg"),
     dataSource: "已核实"
   },
   {
@@ -224,7 +229,7 @@ const SCENES = [
     timeRange: [15, 30],
     socialTags: ["alone"],
     smallAction: "找一张树荫下的石凳，把今天要背的内容读出声来。",
-    imagePath: "",
+    imagePath: cloudImage("scene-013-meiyuan-shideng.jpg"),
     dataSource: "已核实"
   },
   {
@@ -238,7 +243,7 @@ const SCENES = [
     timeRange: [15, 30],
     socialTags: ["alone", "small"],
     smallAction: "挑一块有阳光的草地坐下，晒十分钟太阳。",
-    imagePath: "",
+    imagePath: cloudImage("scene-014-boyaguangchang.jpg"),
     dataSource: "已核实"
   },
   {
@@ -252,7 +257,7 @@ const SCENES = [
     timeRange: [15, 30],
     socialTags: ["alone"],
     smallAction: "沿着林荫道走到最里面，找个没人的角落坐十分钟。",
-    imagePath: "",
+    imagePath: cloudImage("scene-015-waiguoyu-linyin.jpg"),
     dataSource: "已核实"
   }
 ];

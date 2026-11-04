@@ -40,7 +40,7 @@
  * @property {number[]} timeRange     - 适合的可用时长（分钟）：5 / 15 / 30
  * @property {string[]} socialTags    - 社交舒适度：alone（独处）/ small（少量人群）/ crowded（热闹）
  * @property {string} smallAction     - 可立即执行的小行动建议（一句话）
- * @property {string} imagePath       - 图片路径（暂时留空，后续替换为真实图片）
+ * @property {string} imagePath       - 图片路径（相对网页根目录，例如 assets/images/scenes/xxx.webp）
  * @property {string} dataSource      - 数据来源说明（"已核实" 或 "演示数据"）
  */
 
@@ -56,7 +56,7 @@ const SCENES = [
     timeRange: [15, 30],
     socialTags: ["small"],
     smallAction: "去打半小时球，休息时看看橘猫在不在窝里。",
-    imagePath: "",
+    imagePath: "assets/images/scenes/scene-001-laowangqiuchang-cat.webp",
     dataSource: "已核实"
   },
   {
@@ -70,7 +70,7 @@ const SCENES = [
     timeRange: [15, 30],
     socialTags: ["alone"],
     smallAction: "挑一个窗边的座位坐下，看窗外的景色发发呆。",
-    imagePath: "",
+    imagePath: "assets/images/scenes/scene-002-wenxueyuan-chuangbian.webp",
     dataSource: "已核实"
   },
   {
@@ -84,7 +84,7 @@ const SCENES = [
     timeRange: [15, 30],
     socialTags: ["crowded", "small"],
     smallAction: "找看台中间的位置坐下，认认真真看完一整场电影。",
-    imagePath: "",
+    imagePath: "assets/images/scenes/scene-003-lutian-dianyingchang.webp",
     dataSource: "已核实"
   },
   {
@@ -98,7 +98,7 @@ const SCENES = [
     timeRange: [15, 30],
     socialTags: ["small", "crowded"],
     smallAction: "戴上耳机听首歌，跟着节奏沿跑道慢跑一圈。",
-    imagePath: "",
+    imagePath: "assets/images/scenes/scene-004-youmingtiyuchang.webp",
     dataSource: "已核实"
   },
   {
@@ -112,7 +112,7 @@ const SCENES = [
     timeRange: [5, 15],
     socialTags: ["alone"],
     smallAction: "在广场边站五分钟，看看来往的人都在忙些什么。",
-    imagePath: "",
+    imagePath: "assets/images/scenes/scene-005-yundaiyingguangchang.webp",
     dataSource: "已核实"
   },
   {
@@ -126,7 +126,7 @@ const SCENES = [
     timeRange: [5, 15],
     socialTags: ["alone"],
     smallAction: "在一楼挑个靠边的位子，慢慢吃完一整顿饭。",
-    imagePath: "",
+    imagePath: "assets/images/scenes/scene-006-qinyuanchunshitang.webp",
     dataSource: "已核实"
   },
   {
@@ -140,7 +140,7 @@ const SCENES = [
     timeRange: [5, 15],
     socialTags: ["small", "crowded"],
     smallAction: "去一楼自助小碗菜区，拿一个自己没吃过的菜。",
-    imagePath: "",
+    imagePath: "assets/images/scenes/scene-007-guixiangyuanshitang.webp",
     dataSource: "已核实"
   },
   {
@@ -154,7 +154,7 @@ const SCENES = [
     timeRange: [5, 15, 30],
     socialTags: ["alone"],
     smallAction: "给自己定一个小目标，学完就起身休息。",
-    imagePath: "",
+    imagePath: "assets/images/scenes/scene-008-nanhu-shuiba.webp",
     dataSource: "已核实"
   },
   {
@@ -168,7 +168,7 @@ const SCENES = [
     timeRange: [5, 15],
     socialTags: ["alone", "small"],
     smallAction: "在门口「爱我中华」花圃边站一站，数一数里面种了几种花。",
-    imagePath: "",
+    imagePath: "assets/images/scenes/scene-009-wenhua-gongshulin-aiwozhonghua.webp",
     dataSource: "已核实"
   },
   {
@@ -182,7 +182,7 @@ const SCENES = [
     timeRange: [15, 30],
     socialTags: ["small", "crowded"],
     smallAction: "点一杯奶茶，赶上有人弹琴就多坐一会儿。",
-    imagePath: "",
+    imagePath: "assets/images/scenes/scene-010-nanhu-shitang-piano.webp",
     dataSource: "已核实"
   },
   {
@@ -196,7 +196,7 @@ const SCENES = [
     timeRange: [15, 30],
     socialTags: ["small", "crowded"],
     smallAction: "去场边投十个篮，进几个都算赢。",
-    imagePath: "",
+    imagePath: "assets/images/scenes/scene-011-nanhu-lanqiuchang.webp",
     dataSource: "已核实"
   },
   {
@@ -210,7 +210,7 @@ const SCENES = [
     timeRange: [15, 30],
     socialTags: ["alone", "small"],
     smallAction: "坐进藤椅里，抬头数一数能看见几种绿。",
-    imagePath: "",
+    imagePath: "assets/images/scenes/scene-012-nanhu-kongdi.webp",
     dataSource: "已核实"
   },
   {
@@ -224,7 +224,7 @@ const SCENES = [
     timeRange: [15, 30],
     socialTags: ["alone"],
     smallAction: "找一张树荫下的石凳，把今天要背的内容读出声来。",
-    imagePath: "",
+    imagePath: "assets/images/scenes/scene-013-meiyuan-shideng.webp",
     dataSource: "已核实"
   },
   {
@@ -238,7 +238,7 @@ const SCENES = [
     timeRange: [15, 30],
     socialTags: ["alone", "small"],
     smallAction: "挑一块有阳光的草地坐下，晒十分钟太阳。",
-    imagePath: "",
+    imagePath: "assets/images/scenes/scene-014-boyaguangchang.webp",
     dataSource: "已核实"
   },
   {
@@ -252,7 +252,7 @@ const SCENES = [
     timeRange: [15, 30],
     socialTags: ["alone"],
     smallAction: "沿着林荫道走到最里面，找个没人的角落坐十分钟。",
-    imagePath: "",
+    imagePath: "assets/images/scenes/scene-015-waiguoyu-linyin.webp",
     dataSource: "已核实"
   }
 ];
